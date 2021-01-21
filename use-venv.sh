@@ -1,0 +1,1 @@
+source ../corpora/rulebook_diffs/2019-09-23/boardgame_scripts/venv/bin/activate
