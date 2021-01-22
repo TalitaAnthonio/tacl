@@ -1,4 +1,5 @@
-# used to check whether the atomic insertions file really contains atomic insertions 
+# Used to check whether the atomic insertions file really contains atomic insertions 
+# And used to extract trigrams and unigrams that are indeed atomic insertions. 
 
 import json 
 
