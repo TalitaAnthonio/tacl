@@ -8,13 +8,9 @@ with open('../data/trigrams_current_set.json', 'r') as json_in:
 
 
 for revision_id, _ in trigram_data.items():
-    sents = 
-
-    print(trigram_data[key]['base_tokenized'])
-    print(trigram_data[key]['revised_tokenized'])
-    print(trigram_data[key]['parsed_revised_sentence'])
-    if trigram_data[key]['parsed_revised_sentence'] != "EMPTY": 
-        print(trigram_data[key]['parsed_revised_sentence']['insertion_parsed'])
-    print(trigram_data[key]['insertion_phrases'])
-    print(trigram_data[key]['insertion_indexes'])
-    print('------------------------------------')
+    sents = trigram_data[key]['sents']
+    insertion = trigram_data[key]['insertion_phrases']
+    index_of_revised_sentence = len(sents)-1
+    revised_tokenized = trigram_data[key]['revised_tokenized']
+    base_tokenized = trigram_data[key]['base_tokenized']
+    # -------- add all necessary variables --------------
