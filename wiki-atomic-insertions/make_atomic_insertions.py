@@ -1,4 +1,4 @@
-# This script is used to make WikiHowAtomicInsertions
+# This script was previously used to make WikiHowAtomicInsertions
 
 
 import json
