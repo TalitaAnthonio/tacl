@@ -50,12 +50,11 @@ def main():
     for key, _ in wikihow_atomic_insertions.items(): 
         if key not in to_ignore: 
             total +=1 
-            print(key)
             revised_tokenized = wikihow_atomic_insertions[key]['revised_tokenized']
             base_tokenized = wikihow_atomic_insertions[key]['base_tokenized']
             insertion = wikihow_atomic_insertions[key]['insertion_phrases']
             assert len(insertion) == 1
-            if len(insertion[0]) == 3: 
+            if len(insertion[0]) == 4: 
                 indexes = get_insertion_index(base_tokenized, revised_tokenized, insertion, key)
                 if indexes: 
                     if type(indexes[0]) == int: 
@@ -73,7 +72,7 @@ def main():
                         trigram_insertions[key] = wikihow_atomic_insertions[key]
     print(counter)
     print(total)
-    with open("../data/trigram_atomic_edits.json", 'w') as json_out: 
-         json.dump(trigram_insertions, json_out)
     
+    with open("../data/four-gram_atomic_edits.json", 'w') as json_out: 
+         json.dump(trigram_insertions, json_out)
 main()
