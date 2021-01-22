@@ -32,12 +32,13 @@ def main():
     counter = 0 
     needs_coref = {}
     for key, _ in data.items(): 
-        if key not in part1.keys(): 
+        if key in part1.keys(): 
            needs_coref[key] = to_be_parsed[key]
+           needs_coref[key].update({"parsed_revised_sentence": part1[key]['parsed_revised_sentence'], "coref": part1[key]['coref']})
 
     print(counter)
     print(len(data.keys()))
 
-    with open("trigrams_remaining_atomic_edits.json", "w") as json_out:
+    with open("../data/trigrams_current_set.json", "w") as json_out:
          json.dump(needs_coref, json_out)
 main() 
