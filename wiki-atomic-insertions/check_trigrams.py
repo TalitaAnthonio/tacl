@@ -19,6 +19,7 @@ def read_json_lines(path_to_file):
     return d 
 
 
+
 def main(): 
 
     path_to_trigrams_part1 = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/data/trigrams/trigrams_coref_part1.json"
@@ -34,7 +35,7 @@ def main():
     for key, _ in data.items(): 
         if key in part1.keys(): 
            needs_coref[key] = to_be_parsed[key]
-           needs_coref[key].update({"parsed_revised_sentence": part1[key]['parsed_revised_sentence'], "coref": part1[key]['coref']})
+           needs_coref[key].update({"parsed_revised_sentence": part1[key]['parsed_revised_sentence'], "coref": part1[key]['coref'], "insertion_indexes": data[key]["indexes"], "sents": part1[key]['sents']})
 
     print(counter)
     print(len(data.keys()))

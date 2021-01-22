@@ -7,7 +7,8 @@ with open('../data/trigrams_current_set.json', 'r') as json_in:
 
 
 
-for key, _ in trigram_data.items():
+for revision_id, _ in trigram_data.items():
+    sents = 
 
     print(trigram_data[key]['base_tokenized'])
     print(trigram_data[key]['revised_tokenized'])
