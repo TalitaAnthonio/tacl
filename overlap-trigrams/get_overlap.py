@@ -31,46 +31,37 @@ for revision_id, _ in trigram_data.items():
                 #if mention["ref"] == insertion: 
                 if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
                    implicit_references[revision_id] = trigram_data[revision_id]
-                   implicit_references[revision_id].update({"type": "trigram", "beginindex": indexes[0][0]})
-                   if insertion[0] in list_of_function_words: 
-                       function_words +=1 
-                   print(mention['ref'], insertion[1])
-                   print(revised_tokenized)
-                   print(base_tokenized)
-                   print(insertion)
-                   print('------------------------------------------------------------------')
+                   implicit_references[revision_id].update({"type": "trigram", "beginindex": indexes[0][0], "category": "trigram"})
                    break 
                 # -------------------  check for bigrams -------------------------------
                 # check for the bigrams: ex: [in the box] -> the box (type1)
                 elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
                      #counter +=1
                      implicit_references[revision_id] = trigram_data[revision_id]
-                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]+1})
+                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]+1, "category": "bigram-last-two"})
                      break 
                 # ex: in the box -> in the (type2)
                 elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
                      implicit_references[revision_id] = trigram_data[revision_id] 
-                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]})
+                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0], "category": "bigram-first-two"})
                      break 
                 # -------------------  check for bigrams -------------------------------
                 # ---------------------check for single insertions--------------------------------
                 elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
                      implicit_references[revision_id] = trigram_data[revision_id] 
-                     implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]})
+                     implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0], "category": "single-first"})
                      break 
                 elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
                     implicit_references[revision_id] = trigram_data[revision_id] 
-                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+1})
+                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+1, "category": "single-second"})
                     break 
-                elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+2: 
-                    counter +=1 
+                elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
                     implicit_references[revision_id] = trigram_data[revision_id] 
-                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+2})
+                    counter +=1 
+                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+2, "category":"single-third"})
                     break 
 
 
                 
-
 print(counter)
-print(function_words)
 print(len(implicit_references.keys()))
