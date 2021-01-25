@@ -33,6 +33,7 @@ for revision_id, _ in trigram_data.items():
                 if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
                    implicit_references[revision_id] = trigram_data[revision_id]
                    implicit_references[revision_id].update({"type": "trigram", "beginindex": indexes[0][0], "category": "trigram"})
+                   
                    break 
                 # -------------------  check for bigrams -------------------------------
                 # check for the bigrams: ex: [in the box] -> the box (type1)
@@ -45,6 +46,9 @@ for revision_id, _ in trigram_data.items():
                 elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
                      implicit_references[revision_id] = trigram_data[revision_id] 
                      implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0], "category": "bigram-first-two"})
+                     print(insertion, mention['ref'])
+                     print(base_tokenized)
+                     print(revised_tokenized)
                      break 
                 # -------------------  check for bigrams -------------------------------
                 # ---------------------check for single insertions--------------------------------
@@ -59,6 +63,7 @@ for revision_id, _ in trigram_data.items():
                 elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
                     implicit_references[revision_id] = trigram_data[revision_id] 
                     counter +=1 
+              
                     implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+2, "category":"single-third"})
                     break 
 
