@@ -28,12 +28,23 @@ for revision_id, _ in trigram_data.items():
             for mention in corefs_with_revised_sentence[coreference_id]: 
                 #if mention["ref"] == insertion: 
                 if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
-                   counter +=1 
                    implicit_references[revision_id] = trigram_data[revision_id]
                    implicit_references[revision_id].update({"type": "trigram", "beginindex": indexes[0][0]})
-                   print(base_tokenized)
-                   print(revised_tokenized) 
-                   print(insertion)
-                   print('---------------------------------------------------------------------')
+                   break 
+                # -------------------  check for bigrams -------------------------------
+                # check for the bigrams: ex: [in the box] -> the box (type1)
+                elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
+                     #counter +=1 
+                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]+1})
+                     break 
+                # ex: in the box -> in the (type2)
+                elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]: 
+                     counter +=1 
+                     #implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]})
+                     break 
+                # -------------------  check for bigrams -------------------------------
+                
+                
+
 print(counter)
 print(len(implicit_references.keys()))
