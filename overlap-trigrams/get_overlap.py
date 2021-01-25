@@ -1,5 +1,6 @@
 import json 
 from helpers import check_if_revised_in_mentions
+from collections import Counter
 
 #(['filename', 'base_tokenized', 'id', 'revised_tokenized', 'revised_sentence', 'insertion_phrases', 'Base_Sentence', 'Base_Nr', 'Revised_Nr', 'parsed_revised_sentence', 'Base_Article', 'Base_Article_Clean', 'par', 'coref', 'insertion_indexes', 'sents'])
 
@@ -65,3 +66,13 @@ for revision_id, _ in trigram_data.items():
                 
 print(counter)
 print(len(implicit_references.keys()))
+
+elems = []
+for key, _ in implicit_references.items(): 
+    elems.append(implicit_references[key]['category'])
+
+freq_dict = Counter()
+for elem in elems: 
+    freq_dict[elem] +=1 
+
+print(freq_dict)
