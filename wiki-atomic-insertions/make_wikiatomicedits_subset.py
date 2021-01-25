@@ -3,7 +3,6 @@
 
 import json 
 
-
 path_to_wiki_atomic_insertions = '../../../PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/data/WikiAtomicInsertions.json'
 
 with open(path_to_wiki_atomic_insertions, 'r') as json_in:
@@ -55,26 +54,25 @@ def main():
             base_tokenized = wikihow_atomic_insertions[key]['base_tokenized']
             insertion = wikihow_atomic_insertions[key]['insertion_phrases']
             assert len(insertion) == 1
-            if len(insertion[0]) == 3: 
-                indexes = get_insertion_index(base_tokenized, revised_tokenized, insertion, key)
-                if indexes: 
-                    if type(indexes[0]) == int: 
-                        indexes = [indexes]
-        
-                    merged_without_insertion = revised_tokenized[:indexes[0][0]]
-                    second_part = revised_tokenized[indexes[0][1]:]
-                    revised_without_insertion = merged_without_insertion + second_part 
-                    if ' '.join(revised_without_insertion).lower() == ' '.join(base_tokenized).lower(): 
-                        print(revised_tokenized)
-                        print(insertion)
-                        print(base_tokenized)
-                        counter +=1 
-                        print('=======================================')
-                        trigram_insertions[key] = wikihow_atomic_insertions[key]
-                        trigram_insertions[key].update({"indexes": indexes})
+            indexes = get_insertion_index(base_tokenized, revised_tokenized, insertion, key)
+            if indexes: 
+                if type(indexes[0]) == int: 
+                    indexes = [indexes]
+    
+                merged_without_insertion = revised_tokenized[:indexes[0][0]]
+                second_part = revised_tokenized[indexes[0][1]:]
+                revised_without_insertion = merged_without_insertion + second_part 
+                if ' '.join(revised_without_insertion).lower() == ' '.join(base_tokenized).lower(): 
+                    #print(revised_tokenized)
+                    #print(insertion)
+                    #print(base_tokenized)
+                    counter +=1 
+                    #print('=======================================')
+                    trigram_insertions[key] = wikihow_atomic_insertions[key]
+                    trigram_insertions[key].update({"indexes": indexes})
     print(counter)
     print(total)
     
-    with open("../data/trigram_atomic_edits.json", 'w') as json_out: 
-         json.dump(trigram_insertions, json_out)
+    #with open("../data/trigram_atomic_edits.json", 'w') as json_out: 
+    #     json.dump(trigram_insertions, json_out)
 main()
