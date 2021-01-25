@@ -35,15 +35,40 @@ for revision_id, _ in trigram_data.items():
                 # check for the bigrams: ex: [in the box] -> the box (type1)
                 elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
                      #counter +=1 
+                     implicit_references[revision_id] = trigram_data[revision_id]
                      implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]+1})
                      break 
                 # ex: in the box -> in the (type2)
-                elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]: 
-                     counter +=1 
-                     #implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]})
+                elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
+                     implicit_references[revision_id] = trigram_data[revision_id] 
+                     implicit_references[revision_id].update({"type": "bigram", "beginindex": indexes[0][0]})
                      break 
                 # -------------------  check for bigrams -------------------------------
-                
+                # ---------------------check for single insertions--------------------------------
+                elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
+                     implicit_references[revision_id] = trigram_data[revision_id] 
+                     implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]})
+                     break 
+                elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
+                    print(mention['ref'], insertion[1])
+                    print(revised_tokenized)
+                    print(base_tokenized)
+                    print(insertion)
+                    print('------------------------------------------------------------------')
+                    implicit_references[revision_id] = trigram_data[revision_id] 
+                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+1})
+                    break 
+                elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+2: 
+                    print(mention['ref'], insertion[1])
+                    print(revised_tokenized)
+                    print(base_tokenized)
+                    print(insertion)
+                    print('------------------------------------------------------------------')
+                    counter +=1 
+                    implicit_references[revision_id] = trigram_data[revision_id] 
+                    implicit_references[revision_id].update({"type": "unigram", "beginindex": indexes[0][0]+2})
+
+
                 
 
 print(counter)
