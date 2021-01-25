@@ -44,6 +44,6 @@ def main():
     print(counter)
     print(len(trigram_atomic_edits.keys()))
 
-    with open("../data/trigrams_current_set.json", "w") as json_out:
+    with open("../data/trigrams_atomic_edits_coref.json", "w") as json_out:
          json.dump(needs_coref, json_out)
 main() 
