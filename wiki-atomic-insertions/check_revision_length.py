@@ -1,6 +1,5 @@
 # This file was used to check the revision length of the insertions and especially those with more than one revision. 
 
-
 import json 
 
 path_to_all = '../../../PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/data/wikihow-with-line-numbers.json'
