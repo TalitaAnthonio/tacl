@@ -81,3 +81,6 @@ for elem in elems:
     freq_dict[elem] +=1 
 
 print(freq_dict)
+
+with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
+     json.dump(implicit_references, json_in)
