@@ -1,7 +1,7 @@
 import pandas as pd 
 import json 
 
-insertion_type = "trigram"
+insertion_type = "unigram"
 
 
 if insertion_type == "bigram": 
@@ -11,6 +11,9 @@ if insertion_type == "bigram":
 elif insertion_type == 'trigram': 
     path_to_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
     path_to_file_out = "trigrams_filtered.tsv"
+else: 
+    path_to_file = "unigram_edits_implicit.json"
+    path_to_file_out = "unigrams.tsv"
 
 
 with open(path_to_file, "r") as json_in: 
@@ -24,7 +27,10 @@ def main():
         print(trigrams[key].keys())
         
         dataframe_dict["Base-Sentence"].append(trigrams[key]['base_tokenized'])
-        dataframe_dict["Revised-Sentence"].append(trigrams[key]['revised_tokenized'])
+        if not insertion_type == 'unigram': 
+            dataframe_dict["Revised-Sentence"].append(trigrams[key]['revised_tokenized'])
+        else: 
+            dataframe_dict["Revised-Sentence"].append(trigrams[key]['revised_sentence'])
         dataframe_dict["Insertion"].append(trigrams[key]['insertion'])
         dataframe_dict["reference"].append(trigrams[key]['reference'])
         dataframe_dict["reference-type"].append(trigrams[key]['reference-type'])
