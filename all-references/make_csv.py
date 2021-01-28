@@ -1,7 +1,19 @@
 import pandas as pd 
 import json 
 
-with open("../bigrams/bigram_atomic_edits_implicit_pos_filtered.json", "r") as json_in: 
+insertion_type = "trigram"
+
+
+if insertion_type == "bigram": 
+    path_to_file = "../bigrams/bigram_atomic_edits_implicit_pos_filtered.json"
+    path_to_file_out = "bigrams_filtered.tsv"
+
+elif insertion_type == 'trigram': 
+    path_to_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
+    path_to_file_out = "trigrams_filtered.tsv"
+
+
+with open(path_to_file, "r") as json_in: 
      trigrams = json.load(json_in)
 
 
@@ -20,6 +32,6 @@ def main():
 
 
     df = pd.DataFrame.from_dict(dataframe_dict)
-    df.to_csv("bigrams_filtered.tsv", index=False, sep='\t')
+    df.to_csv(path_to_file_out, index=False, sep='\t')
 
 main()
