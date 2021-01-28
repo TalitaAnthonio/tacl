@@ -4,3 +4,4 @@ data/
 *.json
 */.ipynb_checkpoints
 *.pyc
+*.tsv
