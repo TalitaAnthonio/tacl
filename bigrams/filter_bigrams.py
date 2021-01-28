@@ -58,12 +58,17 @@ def filter_using_pos_tags(data):
 def main(): 
     counter = 0 
     filtered_set = filter_using_pos_tags(data)
+    for key, _ in filtered_set.items(): 
+        if type(filtered_set[key]) == list: 
+           print(filtered_set[key])
+           break 
+
     filtered_set_bigrams = {}
     for key, _ in filtered_set.items(): 
         if filtered_set[key]['bigram'] == True: 
             filtered_set_bigrams[key] = filtered_set[key]
             reference =  filtered_set[key]['insertion_phrases'][0]
-            filtered_set_bigrams.update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "position-of-ref-in-insertion": "bigram"})
+            filtered_set_bigrams[key].update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "position-of-ref-in-insertion": "bigram"})
         else:
             filtered_set_bigrams[key] = filtered_set[key] 
             reference = [filtered_set[key]['insertion_phrases'][0][filtered_set[key]['index_of_reference']]]
@@ -72,7 +77,7 @@ def main():
                 reference_type = "bigram-first-token"
             else: 
                 reference_type = "bigram-second-token"
-                filtered_set_bigrams.update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference})
+                filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference})
     
     print(filtered_set_bigrams.keys())
 
