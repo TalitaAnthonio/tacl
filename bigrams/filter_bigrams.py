@@ -77,9 +77,9 @@ def main():
                 reference_type = "bigram-first-token"
             else: 
                 reference_type = "bigram-second-token"
-                filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference})
+            filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference})
     
-    print(filtered_set_bigrams.keys())
+    print(len(filtered_set_bigrams.keys()))
 
     with open("bigram_atomic_edits_implicit_pos_filtered.json", "w") as json_out: 
          json.dump(filtered_set_bigrams, json_out)
