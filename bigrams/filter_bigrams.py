@@ -75,4 +75,7 @@ def main():
     
     print(filtered_set_bigrams.keys())
 
+    with open("bigram_atomic_edits_implicit_pos_filtered.json", "w") as json_out: 
+         json.dump(filtered_set_bigrams, json_out)
+
 main() 
