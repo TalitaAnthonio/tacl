@@ -33,8 +33,9 @@ with open(path_to_file, "r") as file_in:
      data = json.load(file_in)
 
 
-def main(): 
+def filter_using_pos_tags(data):
     counter = 0 
+    filtered = {}
     for key, _ in data.items(): 
         #print(data[key]['base_tokenized']) 
         #print(data[key]['revised_sentence'])
@@ -45,14 +46,23 @@ def main():
 
         insertion_tagged = revised_sentence_object.insertion_tagged
         pos_tags_in_insertion = [pair[1] for pair in insertion_tagged]
-        print('---------------------------------')
         if 'VERB' not in pos_tags_in_insertion:
             if 'AUX' not in pos_tags_in_insertion:  
                 if 'CCONJ' not in pos_tags_in_insertion: 
                     counter +=1 
-                    print(insertion_tagged)
+                    filtered[key] = data[key]
         
+    return filtered
+
+
+
+def main(): 
+    counter = 0 
+    filtered_set = filter_using_pos_tags(data)
+    for key, _ in filtered_set.items(): 
+        if filtered_set[key]['bigram'] == True: 
+           print(filtered_set[key]['bigram'])
+           counter +=1 
     print(counter)
-    print(len(data.keys()))
 
 main() 
