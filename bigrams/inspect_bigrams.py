@@ -2,7 +2,6 @@ import json
 import spacy 
 from spacy.tokens import Doc
 
-path_to_file = '../data/trigram_atomic_edits_implicit.json'
 nlp = spacy.load("en_core_web_sm")
 nlp.tokenizer = nlp.tokenizer.tokens_from_list
 
@@ -59,10 +58,21 @@ def filter_using_pos_tags(data):
 def main(): 
     counter = 0 
     filtered_set = filter_using_pos_tags(data)
+    filtered_set_bigrams = {}
     for key, _ in filtered_set.items(): 
         if filtered_set[key]['bigram'] == True: 
-           print(filtered_set[key]['bigram'])
-           counter +=1 
-    print(counter)
+            filtered_set_bigrams[key] = filtered_set[key]
+            reference =  filtered_set[key]['insertion_phrases'][0]
+            filtered_set_bigrams.update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "category": "bigram"})
+        else: 
+            reference = [filtered_set[key]['insertion_phrases'][0][filtered_set[key]['index_of_reference']]]
+
+            if filtered_set[key]['index_of_reference'] == 0: 
+                reference_type = "bigram-first-token"
+            else: 
+                reference_type = "bigram-second_token"
+                filtered_set_bigrams.update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "category": reference})
+    
+    print(filtered_set_bigrams.keys())
 
 main() 
