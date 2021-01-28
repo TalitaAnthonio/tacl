@@ -64,7 +64,8 @@ def main():
             filtered_set_bigrams[key] = filtered_set[key]
             reference =  filtered_set[key]['insertion_phrases'][0]
             filtered_set_bigrams.update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "position-of-ref-in-insertion": "bigram"})
-        else: 
+        else:
+            filtered_set_bigrams[key] = filtered_set[key] 
             reference = [filtered_set[key]['insertion_phrases'][0][filtered_set[key]['index_of_reference']]]
 
             if filtered_set[key]['index_of_reference'] == 0: 
