@@ -1,7 +1,7 @@
 import pandas as pd 
 import json 
 
-with open("../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json", "r") as json_in: 
+with open("../bigrams/bigram_atomic_edits_implicit_pos_filtered.json", "r") as json_in: 
      trigrams = json.load(json_in)
 
 
@@ -9,6 +9,7 @@ with open("../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json",
 def main():
     dataframe_dict = {"Base-Sentence": [], "Revised-Sentence": [], "Insertion": [], "reference": [], "reference-type": [], "position-of-ref-in-insertion": []}
     for key, _ in trigrams.items(): 
+        print(trigrams[key].keys())
         
         dataframe_dict["Base-Sentence"].append(trigrams[key]['base_tokenized'])
         dataframe_dict["Revised-Sentence"].append(trigrams[key]['revised_tokenized'])
@@ -19,6 +20,6 @@ def main():
 
 
     df = pd.DataFrame.from_dict(dataframe_dict)
-    print(df)
+    df.to_csv("bigrams_filtered.tsv", index=False, sep='\t')
 
 main()
