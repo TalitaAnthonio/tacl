@@ -63,15 +63,15 @@ def main():
         if filtered_set[key]['bigram'] == True: 
             filtered_set_bigrams[key] = filtered_set[key]
             reference =  filtered_set[key]['insertion_phrases'][0]
-            filtered_set_bigrams.update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "category": "bigram"})
+            filtered_set_bigrams.update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "position-of-ref-in-insertion": "bigram"})
         else: 
             reference = [filtered_set[key]['insertion_phrases'][0][filtered_set[key]['index_of_reference']]]
 
             if filtered_set[key]['index_of_reference'] == 0: 
                 reference_type = "bigram-first-token"
             else: 
-                reference_type = "bigram-second_token"
-                filtered_set_bigrams.update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "category": reference})
+                reference_type = "bigram-second-token"
+                filtered_set_bigrams.update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference})
     
     print(filtered_set_bigrams.keys())
 
