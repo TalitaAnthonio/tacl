@@ -17,8 +17,13 @@ def select_biggest_reference(coreferences_in_revision_dict):
            break # use to stop iterating (do not look for references that are smaller than the current one)
     return item_to_return
            
-           
 
+def get_distribution_info(data): 
+    freqs = [data[key]['position-of-ref-in-insertion']for key, _ in data.items()] 
+    freq_dist = Counter()
+    for freq in freqs: 
+         freq_dist[freq] +=1 
+    return freq_dist
 
 
 def check_for_multiple_references(coreferences_in_revision_dict): 
@@ -28,10 +33,8 @@ def check_for_multiple_references(coreferences_in_revision_dict):
            all_references += coreferences_in_revision_dict[key]
     # return the coreference info (there is only one possible ref)
     if len(all_references) == 1 and all_references != []: 
-       print('returning single item')
        return all_references[0]
     else: 
-       print('previous', all_references)
        biggest_ref = select_biggest_reference(coreferences_in_revision_dict) 
        return biggest_ref
 
@@ -99,11 +102,14 @@ def main():
                               coreferences_in_revision["1"].append(info_to_add)
                               #break 
           flattened = check_for_multiple_references(coreferences_in_revision)
-          print(flattened)
+          if flattened != {} and revision_id not in implicit_references.keys(): 
+             implicit_references[revision_id] = trigram_data[revision_id]
+             implicit_references[revision_id].update(flattened)
 
      print(counter)
      print(len(implicit_references.keys()))
-
+     freqs = get_distribution_info(implicit_references)
+     print(freqs)
 main() 
 
 
