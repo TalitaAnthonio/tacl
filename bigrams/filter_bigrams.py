@@ -53,6 +53,16 @@ def filter_using_pos_tags(data):
         
     return filtered
 
+def filter_unigrams(revised_tokenized, insertion_index, reference):
+    revised_sentence_object = RevisedSentence(revised_tokenized, insertion_index)
+    pos_tags_in_insertion = [pair[1] for pair in revised_sentence_object.insertion_tagged]
+    pos_tag_from_second_token = pos_tags_in_insertion[1]
+    tags_to_remove = ['NOUN']
+
+    if pos_tags_in_insertion[0] != 'DET' and pos_tags_in_insertion[1] != 'NOUN': 
+        return True 
+    else: 
+        return False 
 
 
 def main(): 
@@ -70,18 +80,27 @@ def main():
             reference =  filtered_set[key]['insertion_phrases'][0]
             filtered_set_bigrams[key].update({"insertion":filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "bigram", "position-of-ref-in-insertion": "bigram"})
         else:
-            filtered_set_bigrams[key] = filtered_set[key] 
             reference = [filtered_set[key]['insertion_phrases'][0][filtered_set[key]['index_of_reference']]]
 
             if filtered_set[key]['index_of_reference'] == 0: 
                 reference_type = "bigram-first-token"
-            else: 
+                to_include = filter_unigrams(filtered_set[key]['revised_tokenized'], data[key]['index_of_insertion'][0][0], reference)
+                # only append if it is not of the form 'PRON', 'NOUN'
+                if to_include == True: 
+                    filtered_set_bigrams[key] = filtered_set[key] 
+                    filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference_type})
+                #else: 
+                #    continue
+            else:
                 reference_type = "bigram-second-token"
-            filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference_type})
+                filtered_set_bigrams[key] = filtered_set[key] 
+            
+                filtered_set_bigrams[key].update({"insertion": filtered_set[key]['insertion_phrases'][0], "reference": reference, "reference-type": "unigram", "position-of-ref-in-insertion": reference_type})
     
+    print(counter)
     print(len(filtered_set_bigrams.keys()))
 
-    #with open("bigram_atomic_edits_implicit_pos_filtered.json", "w") as json_out: 
-    #     json.dump(filtered_set_bigrams, json_out)
+    with open("bigram_atomic_edits_implicit_pos_filtered_new.json", "w") as json_out: 
+         json.dump(filtered_set_bigrams, json_out)
 
 main() 
