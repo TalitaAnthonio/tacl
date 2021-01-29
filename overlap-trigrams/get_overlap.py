@@ -18,7 +18,16 @@ def select_biggest_reference(coreferences_in_revision_dict):
     return item_to_return
            
 
-def get_distribution_info(data): 
+def get_distribution_info(data):
+    """
+     Params: 
+     -------------------
+     data {}: the final dataset of the form {key: {implicit reference}} 
+
+     returns
+     ---------------
+     a dict of form Counter()
+    """ 
     freqs = [data[key]['position-of-ref-in-insertion']for key, _ in data.items()] 
     freq_dist = Counter()
     for freq in freqs: 
@@ -27,6 +36,13 @@ def get_distribution_info(data):
 
 
 def check_for_multiple_references(coreferences_in_revision_dict): 
+    """
+       params 
+       ----------
+       coreferences_in_revision_dict {}: of the form {"2": [references], "1": [references] }
+
+       returns a dict with coreference info for the longest entity among the found references. 
+    """
     all_references = []
     for key, _ in coreferences_in_revision_dict.items(): 
         if coreferences_in_revision_dict[key] != []: 
@@ -70,41 +86,29 @@ def main():
                          # -------------------  check for bigrams -------------------------------
                          # check for the bigrams: ex: [in the box] -> the box (type1)
                          elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
-                              #counter +=1
-                              #implicit_references[revision_id] = trigram_data[revision_id]
                               info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:]}
-                              #implicit_references[revision_id].update({"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:]})
                               coreferences_in_revision["2"].append(info_to_add)
-                              #break 
                          # ex: in the box -> in the (type2)
                          elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
-                              #implicit_references[revision_id] = trigram_data[revision_id] 
                               info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-two-tokens", "reference": insertion[0:2]}
                               coreferences_in_revision["2"].append(info_to_add)
-                              #break 
                          # -------------------  check for bigrams -------------------------------
                          # ---------------------check for single insertions--------------------------------
                          elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
-                              #implicit_references[revision_id] = trigram_data[revision_id] 
                               info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-token", "reference": [insertion[0]]}
                               coreferences_in_revision["1"].append(info_to_add)
-                              #break 
                          elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
-                              #implicit_references[revision_id] = trigram_data[revision_id] 
                               info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-second-token", "reference": [insertion[1]] }
                               coreferences_in_revision["1"].append(info_to_add)
-                              #break 
                          elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
-                              #implicit_references[revision_id] = trigram_data[revision_id] 
                               counter +=1 
-                    
                               info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]]}
                               coreferences_in_revision["1"].append(info_to_add)
-                              #break 
-          flattened = check_for_multiple_references(coreferences_in_revision)
-          if flattened != {} and revision_id not in implicit_references.keys(): 
+          
+          info_from_coreference = check_for_multiple_references(coreferences_in_revision)
+          if info_from_coreference != {} and revision_id not in implicit_references.keys(): 
              implicit_references[revision_id] = trigram_data[revision_id]
-             implicit_references[revision_id].update(flattened)
+             implicit_references[revision_id].update(info_from_coreference)
 
      print(counter)
      print(len(implicit_references.keys()))
@@ -113,7 +117,7 @@ def main():
 main() 
 
 
-#with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
-#     json.dump(implicit_references, json_out)
+with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
+     json.dump(implicit_references, json_out)
 
 # Counter({'trigram-second-token': 1841, 'trigram-last-two-tokens': 1362, 'trigram-third-token': 652, 'trigram-first-token': 483, 'trigram-first-two-tokens': 173, 'trigram': 133})
