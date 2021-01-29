@@ -115,3 +115,5 @@ main()
 
 #with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
 #     json.dump(implicit_references, json_out)
+
+# Counter({'trigram-second-token': 1841, 'trigram-last-two-tokens': 1362, 'trigram-third-token': 652, 'trigram-first-token': 483, 'trigram-first-two-tokens': 173, 'trigram': 133})
