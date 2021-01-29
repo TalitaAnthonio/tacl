@@ -47,20 +47,35 @@ def first_step_filtering(data):
         if 'VERB' not in pos_tags_in_insertion:
             if 'AUX' not in pos_tags_in_insertion:  
                 if 'CCONJ' not in pos_tags_in_insertion: 
-                    print(data[key]['base_tokenized'])
-                    print(revised_tokenized)
-                    print(insertion_tagged)
-                    print(data[key]['insertion_phrases'])
-                    print(data[key]['reference']) 
                     filtered_set[key] = data[key]
     return filtered_set
 
 
+def filter_unigrams(filtered_set): 
+    revised_sentence_object = RevisedSentence(filtered_set['revised_tokenized'], filtered_set['insertion_indexes'][0][0]) 
+    insertion_tagged = revised_sentence_object.insertion_tagged
+    pos_tags_in_insertion = [pair[1] for pair in revised_sentence_object.insertion_tagged]
+    # trigram-second-token, trigram-third-token
+    reference_type = filtered_set['position-of-ref-in-insertion']
+    # only keep them when there is punctuation twice (only 3 remain)
+    if reference_type == 'trigram-first-token': 
+       if pos_tags_in_insertion[1] == 'PUNCT' and pos_tags_in_insertion[2] == 'PUNCT': 
+            print(insertion_tagged, filtered_set['reference'])
+    
+        
+
+
 
 def main():
-    print(len(data.keys()))
 
+    #TOADD: make similar rules for trigram-second-token, trigram-third-token
+    print(len(data.keys()))
+    print('make filtered set')
     filtered_set = first_step_filtering(data)
-    print(len(filtered_set.keys()))
+    
+    for key, _ in filtered_set.items(): 
+        if filtered_set[key]['reference-type'] == 'unigram': 
+           filter_unigrams(filtered_set[key])
+           
 
 main()
