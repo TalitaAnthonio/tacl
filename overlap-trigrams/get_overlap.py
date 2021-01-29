@@ -115,8 +115,8 @@ def main():
      freqs = get_distribution_info(implicit_references)
      print(freqs)
 
-with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
-     json.dump(implicit_references, json_out)
+     with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
+          json.dump(implicit_references, json_out)
 
 main() 
 # Counter({'trigram-second-token': 1841, 'trigram-last-two-tokens': 1362, 'trigram-third-token': 652, 'trigram-first-token': 483, 'trigram-first-two-tokens': 173, 'trigram': 133})
