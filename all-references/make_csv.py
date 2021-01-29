@@ -5,8 +5,8 @@ insertion_type = "bigram"
 
 
 if insertion_type == "bigram": 
-    path_to_file = "../bigrams/bigram_atomic_edits_implicit_pos_filtered.json"
-    path_to_file_out = "bigrams_filtered.tsv"
+    path_to_file = "../bigrams/bigram_atomic_edits_implicit_pos_filtered_new.json"
+    path_to_file_out = "bigrams_filtered_new.tsv"
 
 elif insertion_type == 'trigram': 
     path_to_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
