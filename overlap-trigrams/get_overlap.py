@@ -10,67 +10,76 @@ with open('../data/trigrams_atomic_edits_coref.json', 'r') as json_in:
 
 
 
-counter = 0 
-implicit_references = {}
-function_words = 0 
-list_of_function_words = ['or', 'and']
-for revision_id, _ in trigram_data.items():
-    sents = trigram_data[revision_id]['sents']
-    coreference_dict = trigram_data[revision_id]['coref']
-    insertion = trigram_data[revision_id]['insertion_phrases'][0]
-    index_of_revised_sentence = len(sents)-1
-    revised_tokenized = trigram_data[revision_id]['revised_tokenized']
-    base_tokenized = trigram_data[revision_id]['base_tokenized']
-    # [[5, 8]]
-    indexes = trigram_data[revision_id]['insertion_indexes']
-    # Check if the revised sentence is in the coreference dict and obtain all the chains that have the revised sentence.  
-    if coreference_dict != "empty" and coreference_dict != None: 
-        corefs_with_revised_sentence = check_if_revised_in_mentions(coreference_dict, index_of_revised_sentence)
-        # check if the insertion is in the reference. 
-        for coreference_id, _ in corefs_with_revised_sentence.items():
-            for mention in corefs_with_revised_sentence[coreference_id]: 
-                #if mention["ref"] == insertion: 
-                if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
-                   implicit_references[revision_id] = trigram_data[revision_id]
-                   implicit_references[revision_id].update({"insertion": insertion,  "reference-type": "trigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram", "reference": insertion})
-                   
-                   break 
-                # -------------------  check for bigrams -------------------------------
-                # check for the bigrams: ex: [in the box] -> the box (type1)
-                elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
-                     #counter +=1
-                     implicit_references[revision_id] = trigram_data[revision_id]
-                     implicit_references[revision_id].update({"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:]})
-                     break 
-                # ex: in the box -> in the (type2)
-                elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
-                     implicit_references[revision_id] = trigram_data[revision_id] 
-                     implicit_references[revision_id].update({"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-two-tokens", "reference": insertion[0:2]})
-                     print(insertion, mention['ref'])
-                     print(base_tokenized)
-                     print(revised_tokenized)
-                     break 
-                # -------------------  check for bigrams -------------------------------
-                # ---------------------check for single insertions--------------------------------
-                elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
-                     implicit_references[revision_id] = trigram_data[revision_id] 
-                     implicit_references[revision_id].update({"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-token", "reference": [insertion[0]]})
-                     break 
-                elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
-                    implicit_references[revision_id] = trigram_data[revision_id] 
-                    implicit_references[revision_id].update({"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-second-token", "reference": [insertion[1]] })
-                    break 
-                elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
-                    implicit_references[revision_id] = trigram_data[revision_id] 
-                    counter +=1 
-              
-                    implicit_references[revision_id].update({"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]]})
-                    break 
 
 
-                
-print(counter)
-print(len(implicit_references.keys()))
+def main(): 
+     counter = 0 
+     implicit_references = {}
+     function_words = 0 
+     list_of_function_words = ['or', 'and']
+     for revision_id, _ in trigram_data.items():
+          sents = trigram_data[revision_id]['sents']
+          coreference_dict = trigram_data[revision_id]['coref']
+          insertion = trigram_data[revision_id]['insertion_phrases'][0]
+          index_of_revised_sentence = len(sents)-1
+          revised_tokenized = trigram_data[revision_id]['revised_tokenized']
+          base_tokenized = trigram_data[revision_id]['base_tokenized']
+          # [[5, 8]]
+          indexes = trigram_data[revision_id]['insertion_indexes']
+          # Check if the revised sentence is in the coreference dict and obtain all the chains that have the revised sentence.  
+          if coreference_dict != "empty" and coreference_dict != None: 
+               corefs_with_revised_sentence = check_if_revised_in_mentions(coreference_dict, index_of_revised_sentence)
+               # check if the insertion is in the reference. 
+               coreferences_in_revision = {"1": [], "2": []}
+               for coreference_id, _ in corefs_with_revised_sentence.items():
+                    for mention in corefs_with_revised_sentence[coreference_id]: 
+                         #if mention["ref"] == insertion: 
+                         if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
+                              implicit_references[revision_id] = trigram_data[revision_id]
+                              implicit_references[revision_id].update({"insertion": insertion,  "reference-type": "trigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram", "reference": insertion})
+                              
+                              break 
+                         # -------------------  check for bigrams -------------------------------
+                         # check for the bigrams: ex: [in the box] -> the box (type1)
+                         elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
+                              #counter +=1
+                              implicit_references[revision_id] = trigram_data[revision_id]
+                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:]}
+                              #implicit_references[revision_id].update({"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:]})
+                              coreferences_in_revision["2"].append(info_to_add)
+                              #break 
+                         # ex: in the box -> in the (type2)
+                         elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
+                              implicit_references[revision_id] = trigram_data[revision_id] 
+                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-two-tokens", "reference": insertion[0:2]}
+                              coreferences_in_revision["2"].append(info_to_add)
+                              #break 
+                         # -------------------  check for bigrams -------------------------------
+                         # ---------------------check for single insertions--------------------------------
+                         elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
+                              implicit_references[revision_id] = trigram_data[revision_id] 
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-token", "reference": [insertion[0]]}
+                              coreferences_in_revision["1"].append(info_to_add)
+                              #break 
+                         elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
+                              implicit_references[revision_id] = trigram_data[revision_id] 
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-second-token", "reference": [insertion[1]] }
+                              coreferences_in_revision["1"].append(info_to_add)
+                              #break 
+                         elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
+                              implicit_references[revision_id] = trigram_data[revision_id] 
+                              counter +=1 
+                    
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]]}
+                              coreferences_in_revision["1"].append(info_to_add)
+                              #break 
+          print(coreferences_in_revision)
+                    
+     print(counter)
+     print(len(implicit_references.keys()))
 
-with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
-     json.dump(implicit_references, json_out)
+main() 
+
+
+#with open("../data/trigram_atomic_edits_implicit.json", "w") as json_out: 
+#     json.dump(implicit_references, json_out)
