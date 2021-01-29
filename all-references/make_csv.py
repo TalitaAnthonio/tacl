@@ -1,7 +1,7 @@
 import pandas as pd 
 import json 
 
-insertion_type = "bigram"
+insertion_type = "trigram"
 
 
 if insertion_type == "bigram": 
