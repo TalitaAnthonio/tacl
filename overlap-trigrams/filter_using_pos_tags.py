@@ -57,12 +57,22 @@ def filter_unigrams(filtered_set):
     pos_tags_in_insertion = [pair[1] for pair in revised_sentence_object.insertion_tagged]
     # trigram-second-token, trigram-third-token
     reference_type = filtered_set['position-of-ref-in-insertion']
+    
     # only keep them when there is punctuation twice (only 3 remain)
     if reference_type == 'trigram-first-token': 
        if pos_tags_in_insertion[1] == 'PUNCT' and pos_tags_in_insertion[2] == 'PUNCT': 
-            print(insertion_tagged, filtered_set['reference'])
-    
-        
+            
+            return True 
+    elif reference_type == 'trigram-second-token':
+        if pos_tags_in_insertion[-1] != 'NOUN' and pos_tags_in_insertion[-1] != 'PROPN' and pos_tags_in_insertion[-1] != 'ADJ': 
+           return True 
+    # meaning reference_type = trigram-thrid-token 
+    else: 
+        if pos_tags_in_insertion [-2] != 'NOUN' and pos_tags_in_insertion[-2] != 'PROPN' and pos_tags_in_insertion[-2] != 'DET': 
+
+           # deletes cases such as "[[saddle, 'NOUN'], [while, 'SCONJ'], [your, 'DET']]", "[[positive, 'ADJ'], [for, 'ADP'], [me, 'PRON']]"
+           if pos_tags_in_insertion[0] != 'ADJ' and pos_tags_in_insertion[0] != 'NOUN' and pos_tags_in_insertion[0] != 'ADV' and pos_tags_in_insertion[0] != 'PROPN': 
+              return True 
 
 
 
@@ -73,9 +83,15 @@ def main():
     print('make filtered set')
     filtered_set = first_step_filtering(data)
     
+    new_filtered = {}
     for key, _ in filtered_set.items(): 
         if filtered_set[key]['reference-type'] == 'unigram': 
-           filter_unigrams(filtered_set[key])
-           
+           if filter_unigrams(filtered_set[key]): 
+               new_filtered[key] = filtered_set[key]
+        else: 
+            new_filtered[key] = filtered_set[key]
+
+    with open("trigram_atomic_edits_implicit_pos_filtered.json", "w") as json_out: 
+         json.dump(new_filtered, json_out)
 
 main()
