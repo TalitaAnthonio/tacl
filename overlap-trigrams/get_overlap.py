@@ -1,3 +1,5 @@
+# Used to check from the set of trigrams which ones are references. 
+
 import json 
 from helpers import check_if_revised_in_mentions
 from collections import Counter
