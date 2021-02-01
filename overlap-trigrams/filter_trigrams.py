@@ -5,7 +5,7 @@ import json
 path_to_file = '../data/trigram_atomic_edits_implicit.json'
 nlp = spacy.load("en_core_web_sm")
 nlp.tokenizer = nlp.tokenizer.tokens_from_list
-POSTAGS_EXCLUDE_IN_TRIGRAM_SECOND_TOKEN = ("NOUN", "PROPN", "ADJ")
+POSTAGS_EXCLUDE_IN_TRIGRAM_SECOND_TOKEN_FINAL_POS = ("NOUN", "PROPN", "ADJ")
 
 with open(path_to_file, "r") as json_in: 
      data = json.load(json_in)
@@ -65,7 +65,7 @@ def filter_unigrams(filtered_set):
             return True 
     elif reference_type == 'trigram-second-token':
 
-        if pos_tags_in_insertion[-1] not in POSTAGS_EXCLUDE_IN_TRIGRAM_SECOND_TOKEN: 
+        if pos_tags_in_insertion[-1] not in POSTAGS_EXCLUDE_IN_TRIGRAM_SECOND_TOKEN_FINAL_POS: 
 
            return True 
     # meaning reference_type = trigram-third-token 
