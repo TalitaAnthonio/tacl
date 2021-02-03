@@ -1,19 +1,19 @@
 import pandas as pd 
 import json 
 
-insertion_type = "unigram"
+insertion_type = "trigram"
 
 
 if insertion_type == "bigram": 
-    path_to_file = "../bigrams/bigram_atomic_edits_implicit_pos_filtered_new.json"
-    path_to_file_out = "bigrams_filtered_new.tsv"
+    path_to_file = "../bigrams/bigram_edits_final.json"
+    path_to_file_out = "bigram_edits.tsv"
 
 elif insertion_type == 'trigram': 
-    path_to_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
-    path_to_file_out = "trigrams_filtered.tsv"
+    path_to_file = "../overlap-trigrams/trigram_edits_final.json"
+    path_to_file_out = "trigram_edits.tsv"
 else: 
-    path_to_file = "unigram_edits_implicit_v2.json"
-    path_to_file_out = "unigrams.tsv"
+    path_to_file = "unigram_edits_final.json"
+    path_to_file_out = "unigram_edits.tsv"
 
 
 with open(path_to_file, "r") as json_in: 
