@@ -20,9 +20,8 @@ with open(path_to_file, "r") as json_in:
      trigrams = json.load(json_in)
 
 
-
 def main():
-    dataframe_dict = {"Base-Sentence": [], "Revised-Sentence": [], "Insertion": [], "reference": [], "reference-type": [], "position-of-ref-in-insertion": [], "par": []}
+    dataframe_dict = {"Base-Sentence": [], "Revised-Sentence": [], "Insertion": [], "reference": [], "reference-type": [], "position-of-ref-in-insertion": [], "par": [], "id": []}
     for key, _ in trigrams.items(): 
         print(trigrams[key].keys())
         
@@ -32,6 +31,7 @@ def main():
         else: 
             dataframe_dict["Revised-Sentence"].append(trigrams[key]['revised_sentence'])
         dataframe_dict["Insertion"].append(trigrams[key]['insertion'])
+        dataframe_dict["id"].append(key)
         dataframe_dict["reference"].append(trigrams[key]['reference'])
         dataframe_dict["reference-type"].append(trigrams[key]['reference-type'])
         dataframe_dict["par"].append(trigrams[key]['par'])
