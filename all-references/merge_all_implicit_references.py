@@ -5,16 +5,17 @@ DEV_FILES_PATH = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/
 TRAIN_FILES_PATH = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/language-models/train_files.txt"
 TEST_FILES_PATH = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/language-models/test_files.txt"
 
-
 def read_file_with_filenames(path_to_file): 
     with open(path_to_file, "r") as file_in: 
          content = file_in.readlines()
          list_of_files = [filename.strip('\n') for filename in content]
          return list_of_files
 
+
 DEV_FILES = read_file_with_filenames(DEV_FILES_PATH)
 TEST_FILES = read_file_with_filenames(TEST_FILES_PATH)
 TRAIN_FILES = read_file_with_filenames(TRAIN_FILES_PATH)
+KEYS_TO_DELETE = read_file_with_filenames("keys_to_delete.txt")
 
 
 def check_splits(filename):
@@ -39,13 +40,18 @@ def add_split_info(path_to_file):
     
     return data_with_filename_info
 
-
+def delete_cases(complete_set): 
+    filtered = {}
+    for key, _ in complete_set.items(): 
+        if key not in KEYS_TO_DELETE: 
+           filtered[key] = complete_set[key]
+    return filtered
 
 def main(): 
 
-    path_to_bigram_file = "../bigrams/bigram_atomic_edits_implicit_pos_filtered_new.json"
-    path_to_trigram_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
-    path_to_unigram_file = "unigram_edits_implicit_v2.json"
+    path_to_bigram_file = "../bigrams/bigram_edits_final.json"
+    path_to_trigram_file = "../overlap-trigrams/trigram_edits_final.json"
+    path_to_unigram_file = "unigram_edits_final.json"
 
     data = add_split_info(path_to_bigram_file)
     trigrams = add_split_info(path_to_trigram_file) 
@@ -54,7 +60,13 @@ def main():
     data.update(trigrams)
     data.update(unigrams)
 
+    print("current set length")
     print(len(data.keys()))
+
+    filtered = delete_cases(data)
+    
+    print("after filtering")
+    print(len(filtered))
 
     splits = []
     for key, _  in data.items(): 
