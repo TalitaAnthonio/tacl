@@ -24,8 +24,6 @@ def read_file_with_filenames(path_to_file):
 KEYS_TO_DELETE = read_file_with_filenames("keys_to_delete.txt")
 
 
-
-
 with open(path_to_file, "r") as json_in: 
      trigrams = json.load(json_in)
 

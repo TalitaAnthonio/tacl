@@ -69,8 +69,8 @@ def main():
     print(len(filtered))
 
     splits = []
-    for key, _  in data.items(): 
-        splits.append(data[key]['Split'])
+    for key, _  in filtered.items(): 
+        splits.append(filtered[key]['Split'])
     
     freq_dict = Counter()
     for elem in splits: 
@@ -79,7 +79,7 @@ def main():
 
 
     with open('implicit_references.json', 'w') as json_out: 
-         json.dump(data, json_out)
+         json.dump(filtered, json_out)
          
 
 main()
