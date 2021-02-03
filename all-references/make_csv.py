@@ -1,7 +1,7 @@
 import pandas as pd 
 import json 
 
-insertion_type = "trigram"
+insertion_type = "unigram"
 
 
 if insertion_type == "bigram": 
@@ -12,7 +12,7 @@ elif insertion_type == 'trigram':
     path_to_file = "../overlap-trigrams/trigram_atomic_edits_implicit_pos_filtered.json"
     path_to_file_out = "trigrams_filtered.tsv"
 else: 
-    path_to_file = "unigram_edits_implicit.json"
+    path_to_file = "unigram_edits_implicit_v2.json"
     path_to_file_out = "unigrams.tsv"
 
 
@@ -22,7 +22,7 @@ with open(path_to_file, "r") as json_in:
 
 
 def main():
-    dataframe_dict = {"Base-Sentence": [], "Revised-Sentence": [], "Insertion": [], "reference": [], "reference-type": [], "position-of-ref-in-insertion": []}
+    dataframe_dict = {"Base-Sentence": [], "Revised-Sentence": [], "Insertion": [], "reference": [], "reference-type": [], "position-of-ref-in-insertion": [], "par": []}
     for key, _ in trigrams.items(): 
         print(trigrams[key].keys())
         
@@ -34,6 +34,7 @@ def main():
         dataframe_dict["Insertion"].append(trigrams[key]['insertion'])
         dataframe_dict["reference"].append(trigrams[key]['reference'])
         dataframe_dict["reference-type"].append(trigrams[key]['reference-type'])
+        dataframe_dict["par"].append(trigrams[key]['par'])
         dataframe_dict["position-of-ref-in-insertion"].append(trigrams[key]['position-of-ref-in-insertion'])
 
 
