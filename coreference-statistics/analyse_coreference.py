@@ -1,8 +1,11 @@
 import json 
 import pdb 
+from objects import CorefChain
+from collections import Counter 
+import numpy as np 
 
 PATH_TO_BIGRAMS = "../data/bigram_atomic_edits_coref.json" 
-PATH_TO_TRIGRAMS = "../data/trigram_atomic_edits_coref_info.json" 
+PATH_TO_TRIGRAMS = "../data/trigram_atomic_edits_coref_info_filtered.json"
 PATH_TO_UNIGRAMS = "../data/unigram_atomic_edits_coref.json" 
 
 def read_file(path_to_file): 
@@ -10,20 +13,27 @@ def read_file(path_to_file):
          data = json.load(json_in)
     return data 
 
+def build_freq_dict(list_with_frequencies): 
+    freq_dict = Counter()
+    for elem in list_with_frequencies: 
+        freq_dict[elem] +=1 
+    return freq_dict
+
 def main(): 
-    data = read_file(PATH_TO_BIGRAMS)
+    data = read_file(PATH_TO_TRIGRAMS)
+    unigrams = read_file(PATH_TO_UNIGRAMS)
+    print(len(data))
 
     counter = 0 
+    distances = []
+    data.update(unigrams)
     for key, _ in data.items(): 
-        if len(data[key]['CorefChain']) == 1: 
-           print(data[key]['CorefChain'])
-           pdb.set_trace()
-           print(data[key]['coref'])
-           counter +=1 
-    print(counter)
-        #print(data[key]['CorefChain'])
-        #print('\n')
-        #print(data[key]['coref']) 
-        #print("=====================================")
+        corefchain_object = CorefChain(data[key]['CorefChain'])
+        distances.append(corefchain_object.distance_to_reference)
+    
+    freq_dict = build_freq_dict(distances)
+    print(freq_dict)
+    print(np.sum([value for key, value in  dict(freq_dict).items()])) 
+    
 
 main()
