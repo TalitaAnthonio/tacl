@@ -36,18 +36,33 @@ def main():
     print(len(bigrams))
 
     counter = 0 
+
     distances = []
     data.update(unigrams)
     data.update(bigrams)
+    # how often the entities are mentioned 
+    chain_length = []
     for key, _ in data.items(): 
         corefchain_object = CorefChain(data[key]['CorefChain'])
         distances.append(corefchain_object.distance_to_reference)
+        # minus 1 to exclude the implicit reference itself 
+        chain_length.append(corefchain_object.chainlength-1)
+
     
+    print("COREF DISTANCE FREQUENCIES .....")
     freq_dict = build_freq_dict(distances)
     print(freq_dict)
     total = np.sum([value for key, value in  dict(freq_dict).items()])
     calculate_percentage(freq_dict, total)
     print(total)
+
+    print("chain length")
+    freq_dict_chains = build_freq_dict(chain_length)
+    print(freq_dict_chains)
+    # divide by the total number of 
+    calculate_percentage(freq_dict_chains, total)
+    print(np.sum([value for key, value in  dict(freq_dict_chains).items()]))
+
 
 
 main()
