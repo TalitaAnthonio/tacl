@@ -85,29 +85,29 @@ def main():
                          #if mention["ref"] == insertion: 
                          if mention['ref'] == insertion and mention["beginIndex"] == indexes[0][0]: 
                               implicit_references[revision_id] = trigram_data[revision_id]
-                              implicit_references[revision_id].update({"insertion": insertion,  "reference-type": "trigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram", "reference": insertion, "chain-with-mention": corefs_with_revised_sentence[coreference_id]})
+                              implicit_references[revision_id].update({"insertion": insertion,  "reference-type": "trigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram", "reference": insertion, "CorefChain": corefs_with_revised_sentence[coreference_id]})
 
                               break 
                          # -------------------  check for bigrams -------------------------------
                          # check for the bigrams: ex: [in the box] -> the box (type1)
                          elif mention['ref'] == insertion[1:] and mention["beginIndex"] == indexes[0][0]+1: 
-                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:], "chain-with-mention": corefs_with_revised_sentence[coreference_id]}
+                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-last-two-tokens", "reference": insertion[1:], "CorefChain": corefs_with_revised_sentence[coreference_id]}
                               coreferences_in_revision["2"].append(info_to_add)
                          # ex: in the box -> in the (type2)
                          elif mention['ref'] == insertion[0:2] and mention["beginIndex"] == indexes[0][0]:
-                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-two-tokens", "reference": insertion[0:2], "chain-with-mention": corefs_with_revised_sentence[coreference_id]} 
+                              info_to_add = {"insertion": insertion, "reference-type": "bigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-two-tokens", "reference": insertion[0:2], "CorefChain": corefs_with_revised_sentence[coreference_id]} 
                               coreferences_in_revision["2"].append(info_to_add)
                          # -------------------  check for bigrams -------------------------------
                          # ---------------------check for single insertions--------------------------------
                          elif mention['ref'] == [insertion[0]] and mention["beginIndex"] == indexes[0][0]: 
-                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-token", "reference": [insertion[0]], "chain-with-mention": corefs_with_revised_sentence[coreference_id]} 
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0], "position-of-ref-in-insertion": "trigram-first-token", "reference": [insertion[0]], "CorefChain": corefs_with_revised_sentence[coreference_id]} 
                               coreferences_in_revision["1"].append(info_to_add)
                          elif mention['ref'] == [insertion[1]] and mention["beginIndex"] == indexes[0][0]+1: 
-                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-second-token", "reference": [insertion[1]], "chain-with-mention": corefs_with_revised_sentence[coreference_id]} 
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+1, "position-of-ref-in-insertion": "trigram-second-token", "reference": [insertion[1]], "CorefChain": corefs_with_revised_sentence[coreference_id]} 
                               coreferences_in_revision["1"].append(info_to_add)
                          elif mention['ref'] == [insertion[2]] and mention["beginIndex"] == indexes[0][0]+2: 
                               counter +=1 
-                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]], "chain-with-mention": corefs_with_revised_sentence[coreference_id]} 
+                              info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]], "CorefChain": corefs_with_revised_sentence[coreference_id]} 
                               coreferences_in_revision["1"].append(info_to_add)
           
           info_from_coreference = check_for_multiple_references(coreferences_in_revision)
