@@ -1,6 +1,6 @@
 import json 
 
-path_to_subset = "../bigrams/bigram_edits_final.json"
+path_to_subset = "../data/bigram_atomic_edits_final.json"
 
 path_to_coref_info = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/overlap/bigrams_with_coref_info.json"
 
