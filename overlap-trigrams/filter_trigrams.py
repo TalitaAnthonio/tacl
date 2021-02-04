@@ -2,7 +2,7 @@ import spacy
 from spacy.tokens import Doc
 import json
 
-path_to_file = '../data/trigram_atomic_edits_implicit.json'
+path_to_file = '../data/trigram_atomic_edits_coref_info.json'
 nlp = spacy.load("en_core_web_sm")
 nlp.tokenizer = nlp.tokenizer.tokens_from_list
 POSTAGS_EXCLUDE_IN_TRIGRAM_SECOND_TOKEN_FINAL_POS = ("NOUN", "PROPN", "ADJ")
@@ -94,7 +94,7 @@ def main():
             new_filtered[key] = filtered_set[key]
 
     print(len(new_filtered.keys()))
-    with open("../data/trigram_atomic_edits_implicit_filtered.json", "w") as json_out: 
+    with open("../data/trigram_atomic_edits_coref_info_filtered.json", "w") as json_out: 
          json.dump(new_filtered, json_out)
 
 main()
