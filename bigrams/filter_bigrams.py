@@ -100,7 +100,7 @@ def main():
     print(counter)
     print(len(filtered_set_bigrams.keys()))
 
-    with open("bigram_atomic_edits_implicit_pos_filtered_new.json", "w") as json_out: 
+    with open("../data/bigram_atomic_edits_final.json", "w") as json_out: 
          json.dump(filtered_set_bigrams, json_out)
 
 main() 
