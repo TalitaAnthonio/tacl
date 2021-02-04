@@ -17,7 +17,7 @@ def main():
         data_with_coref_info[key] = unigrams[key]
         data_with_coref_info[key].update({'CorefChain': coref_info[key]['chain-with-mention']})
 
-    with open("unigram_edits_final_coref.json", 'w') as json_out: 
+    with open("../data/unigram_atomic_edits_coref.json", 'w') as json_out: 
          json.dump(data_with_coref_info, json_out)
 
 main()
