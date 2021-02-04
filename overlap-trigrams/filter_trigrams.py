@@ -94,7 +94,7 @@ def main():
             new_filtered[key] = filtered_set[key]
 
     print(len(new_filtered.keys()))
-    with open("trigram_atomic_edits_implicit_pos_filtered.json", "w") as json_out: 
+    with open("../data/trigram_atomic_edits_implicit_filtered.json", "w") as json_out: 
          json.dump(new_filtered, json_out)
 
 main()
