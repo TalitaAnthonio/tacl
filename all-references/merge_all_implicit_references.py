@@ -1,5 +1,6 @@
 import json 
 from collections import Counter
+import pdb 
 
 DEV_FILES_PATH = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/language-models/dev_files.txt"
 TRAIN_FILES_PATH = "/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/language-models/train_files.txt"
@@ -36,6 +37,8 @@ def add_split_info(path_to_file):
         data_with_filename_info[key] = data[key]
         split_info = check_splits(data[key]['filename'])
         data_with_filename_info[key].update(split_info)
+        # add also the info about the type of insertion. 
+        data_with_filename_info[key].update({'insertion-type': len(data[key]['insertion'])})
         
     
     return data_with_filename_info
