@@ -53,7 +53,7 @@ def delete_cases(complete_set):
 def main(): 
 
     path_to_bigram_file = "../bigrams/bigram_edits_final.json"
-    path_to_trigram_file = "../overlap-trigrams/trigram_edits_final.json"
+    path_to_trigram_file = "../data/trigram_atomic_edits_implicit_filtered.json"
     path_to_unigram_file = "unigram_edits_final.json"
 
     data = add_split_info(path_to_bigram_file)
