@@ -3,14 +3,14 @@ import json
 
 insertion_type = "trigram"
 if insertion_type == "bigram": 
-    path_to_file = "../bigrams/bigram_edits_final.json"
+    path_to_file = "../data/bigram_atomic_edits_final.json"
     path_to_file_out = "bigram_edits.tsv"
 
 elif insertion_type == 'trigram': 
-    path_to_file = "../overlap-trigrams/trigram_edits_final.json"
+    path_to_file = "../data/trigram_atomic_edits_coref_info_filtered.json"
     path_to_file_out = "trigram_edits.tsv"
 else: 
-    path_to_file = "unigram_edits_final.json"
+    path_to_file = "./unigram_edits_final.json"
     path_to_file_out = "unigram_edits.tsv"
 
 
