@@ -110,11 +110,11 @@ def main():
                               counter +=1 
                               info_to_add = {"insertion": insertion, "reference-type": "unigram", "beginindex": indexes[0][0]+2, "position-of-ref-in-insertion": "trigram-third-token", "reference": [insertion[2]], "CorefChain": coreference_dict[coreference_id]['mentions']} 
                               coreferences_in_revision["1"].append(info_to_add)
-          
-          info_from_coreference = check_for_multiple_references(coreferences_in_revision)
-          if info_from_coreference != {} and revision_id not in implicit_references.keys(): 
-             implicit_references[revision_id] = trigram_data[revision_id]
-             implicit_references[revision_id].update(info_from_coreference)
+               #previous versions: identation was one step to the left. 
+               info_from_coreference = check_for_multiple_references(coreferences_in_revision)
+               if info_from_coreference != {} and revision_id not in implicit_references.keys(): 
+               implicit_references[revision_id] = trigram_data[revision_id]
+               implicit_references[revision_id].update(info_from_coreference)
 
      print(counter)
      print(len(implicit_references.keys()))
