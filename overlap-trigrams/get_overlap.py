@@ -113,8 +113,8 @@ def main():
                #previous versions: identation was one step to the left. 
                info_from_coreference = check_for_multiple_references(coreferences_in_revision)
                if info_from_coreference != {} and revision_id not in implicit_references.keys(): 
-               implicit_references[revision_id] = trigram_data[revision_id]
-               implicit_references[revision_id].update(info_from_coreference)
+                    implicit_references[revision_id] = trigram_data[revision_id]
+                    implicit_references[revision_id].update(info_from_coreference)
 
      print(counter)
      print(len(implicit_references.keys()))
