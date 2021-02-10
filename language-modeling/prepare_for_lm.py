@@ -6,6 +6,7 @@ KEYS_TO_EXCLUDE = ['Answer_Common_Atheists_Questions_About_Christianity23', 'Cel
 PATH_TO_FILE = '../all-references/implicit_references.json'
 PATH_FOR_UNIGRAMS = '/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/overlap/unigrams_with_coref_info.json'
 PATH_FOR_BIGRAMS = '/Users/talita/Documents/PhD/corpora/rulebook_diffs/2019-09-23/boardgame_scripts/wikihow/cloze-test/bigram_references_for_lm_generative_insertions_with_original_context_new.json'
+PATH_TO_FILE_OUT = "../data/references_for_lm.json"
 
 with open(PATH_FOR_UNIGRAMS, 'r') as json_in: 
      unigram_data_prev = json.load(json_in)
@@ -67,9 +68,7 @@ def remove_timestamps(context):
     return ' '.join(context) 
 
 def main(): 
-    unigrams = 0 
-    bigrams = 0 
-    trigrams = 0 
+    data_with_info = {}
     for key, _ in data.items(): 
         # double checked whether everything was correct. 
         # 254 in dev, 229 in test.  
@@ -88,8 +87,11 @@ def main():
             # insertion-type = 3
             lm_components = get_context_for_trigrams(key, data[key])
 
-            #assert data[key]['revised_sentence'][data[key]['index_of_insertion'][0]] == data[key]['insertion'][0]
-            #print(unigram_data_prev[key]['language_model_text'])
-        #   print(data[key]['revised_untill_insertion'])
-           
+        if key not in KEYS_TO_EXCLUDE: 
+           data_with_info[key] = data[key]
+           data_with_info[key].update(lm_components)
+    
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+         json.dump(data_with_info, json_out)
+            
 main()
