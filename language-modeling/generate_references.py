@@ -136,8 +136,5 @@ def main():
                 else:
                     dict_to_write = {"predictions": "check again", "key": revision_id}
                     json_out.write(json.dumps(dict_to_write, default=str) + '\n') 
-                if counter == 10: 
-                   break      
-
 main()
 
