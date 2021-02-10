@@ -53,7 +53,7 @@ def get_context_for_trigrams(key, trigram_instance):
         revised_after_insertion = trigram_instance['revised_tokenized'][begin_position+3:]
     language_model_text = context + ' ' + ' '.join(revised_untill_insertion)
 
-    #return {"language_model_text": language_model_text, "revised_after_insertion": revised_after_insertion, "reference": reference}
+    return {"language_model_text": language_model_text, "revised_after_insertion": revised_after_insertion, "reference": reference}
 
 
 
@@ -74,28 +74,15 @@ def main():
         # 254 in dev, 229 in test.  
         if data[key]['insertion-type'] == 1:          
             context_with_removed_timestamps = remove_timestamps(unigram_data_prev[key]['language_model_text'])
-            split = data[key]['Split']
-            if split == 'DEV': 
-                unigrams +=1 
         # 177 in dev, 178 in test 
         elif data[key]['insertion-type'] == 2:  
             context_with_removed_timestamps = remove_timestamps(bigram_data_prev[key]['language_model_text'])
-            split = data[key]['Split']
-            if split == 'DEV': 
-                bigrams +=1 
         # 160 in dev, 140 in test 
-        elif data[key]['insertion-type'] ==3: 
-            get_context_for_trigrams(key, data[key])
-            split = data[key]['Split']
-            if split == 'DEV': 
-               trigrams +=1  
         else: 
-            print(data[key]['insertion-type'])
+            # insertion-type = 3
+            lm_components = get_context_for_trigrams(key, data[key])
+            assert data[key]['insertion-type'] == 3
         
-    print(unigrams) 
-    print(bigrams)
-    print(trigrams)
-    print(unigrams + bigrams + trigrams)
 
 
             #assert data[key]['revised_sentence'][data[key]['index_of_insertion'][0]] == data[key]['insertion'][0]
