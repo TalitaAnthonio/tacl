@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 
 # the file with the results 
-PATH_TO_FILE_IN_RESULTS = "test.json"
+PATH_TO_FILE_IN_RESULTS = "results-on-test-set.json"
 # the file with the other information 
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
@@ -17,7 +17,7 @@ with open(PATH_TO_FILE_IN, 'r') as json_in:
      data = json.load(json_in)
 
 
-def compute_overlap(generated_sequences, correct_insertion, top_k=10): 
+def compute_overlap(generated_sequences, correct_insertion, top_k=100): 
     "function to check if the reference is in the generated sequences"
     generated_sequences_stripped = [sequence.lstrip() for sequence in generated_sequences]
     generated_sequences_stripped = generated_sequences_stripped[:top_k]
@@ -53,7 +53,7 @@ def main():
     total = 0 
     bar = Bar('Processing ...', max=len(results_in_dict_format.keys()))
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'DEV': 
+        if results_in_dict_format[key]['Split'] == 'TEST': 
             total +=1 
             #bar.next()
             top100_predictions = results_in_dict_format[key]['predictions']['generated_texts']
@@ -65,7 +65,7 @@ def main():
 
             # compute 
             correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=100)
-            if correct_or_not == 1 and len(correct_reference.split()) == 3: 
+            if correct_or_not == 1: 
                 print(correct_reference, '\t', results_in_dict_format[key]['predictions']['generated_texts'])
             counter += correct_or_not
 
