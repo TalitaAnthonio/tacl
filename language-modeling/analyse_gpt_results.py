@@ -23,13 +23,8 @@ def compute_overlap(generated_sequences, correct_insertion, top_k=100):
     generated_sequences_stripped = generated_sequences_stripped[:top_k]
     #print("Top {0}: {1}".format(top_k, generated_sequences_stripped))
     matches = []
-    for generated_sequence in generated_sequences_stripped: 
-        if generated_sequence == correct_insertion: 
-            matches.append(1)
-        else:
-            matches.append(0)
-    if 1 in matches: 
-       return 1 
+    if correct_insertion in generated_sequences_stripped: 
+        return 1 
     else: 
         return 0 
 
@@ -64,7 +59,7 @@ def main():
 
 
             # compute 
-            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=100)
+            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=1)
             if correct_or_not == 1: 
                 print(correct_reference, '\t', results_in_dict_format[key]['predictions']['generated_texts'])
             counter += correct_or_not
