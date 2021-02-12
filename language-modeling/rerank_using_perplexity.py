@@ -3,11 +3,11 @@ from lm_scorer import GPTScorer
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 from progress.bar import Bar
 
-PATH_TO_FILE_IN_RESULTS = "results-on-test-set.json"
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set.json"
 TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
 MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
-PATH_TO_FILE_OUT = "results-on-test-set-reranked.json"
+PATH_TO_FILE_OUT = "results-on-dev-set-reranked.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
@@ -48,11 +48,11 @@ def main():
     # revised_afer_insertion 
     results_in_dict_format = convert_lines_to_dict_format(PATH_TO_FILE_IN_RESULTS)
     
-    bar = Bar('Processing ..', max=546)
+    bar = Bar('Processing ..', max=len(results_in_dict_format.keys()))
     
     d = {}
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'TEST': 
+        if results_in_dict_format[key]['Split'] == 'DEV': 
             bar.next()
             generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
             revised_untill_insertion = results_in_dict_format[key]['revised_untill_insertion']
@@ -66,8 +66,8 @@ def main():
             
     bar.finish()
 
-   with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-         json.dump(d, json_out)
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+            json.dump(d, json_out)
 
 
 main()
