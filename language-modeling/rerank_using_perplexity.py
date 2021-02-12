@@ -66,8 +66,8 @@ def main():
             
     bar.finish()
 
-   with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-         json.dump(d, json_out)
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+          json.dump(d, json_out)
 
 
 main()
