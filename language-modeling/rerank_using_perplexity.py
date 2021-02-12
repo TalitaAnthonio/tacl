@@ -38,7 +38,7 @@ def rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, g
     # everything up to the insertion 
     generated_sequences_within_sentence = []
     for position, generated_sequence in enumerate(generated_sequences, 1): 
-        full_sequence_with_generated_insertion = "{0} {1} {2}".format(' '.join(revised_untill_insertion), generated_sequence.lstrip(), ' '.join(revised_after_insertion))
+        full_sequence_with_generated_insertion = "{0} {1} {2}".format(revised_untill_insertion, generated_sequence.lstrip(), revised_after_insertion)
         generated_sequences_within_sentence.append([position, full_sequence_with_generated_insertion, generated_sequence])
     rerank_with_perplexity = compute_perplexity(generated_sequences_within_sentence)
     return [elem[2] for elem in rerank_with_perplexity]
@@ -60,14 +60,15 @@ def main():
                 revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
             else: 
                 revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
+        
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
-            d[key] = results_in_dict_format[key]
-            d[key].update({"generated_text_perplexity": reranked})
+            #d[key] = results_in_dict_format[key]
+            #d[key].update({"generated_text_perplexity": reranked})
             
     bar.finish()
 
-    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-            json.dump(d, json_out)
+    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+    #        json.dump(d, json_out)
 
 
 main()
