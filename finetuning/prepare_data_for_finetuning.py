@@ -53,19 +53,21 @@ def main():
         
         # truncate text in case longer than 512 tokens. 
         context_plus_revised_sentence = trunc_text(context_plus_revised_sentence)
+
         if data[key]['Split'] == 'TRAIN': 
 
            train_dataframe["text"].append(context_plus_revised_sentence)
         elif data[key]['Split'] == 'DEV': 
 
 
-           train_dataframe["text"].append(context_plus_revised_sentence)
+           dev_dataframe["text"].append(context_plus_revised_sentence)
         else: 
             test_instance_id +=1 
 
     
     train_dataframe["ids"] = [i for i in range(len(train_dataframe["text"]))]
     dev_dataframe["ids"] = [i for i in range(len(dev_dataframe["text"]))]
+
     make_dataframe(train_dataframe, 'train.csv')
     make_dataframe(dev_dataframe, 'dev.csv')
 
