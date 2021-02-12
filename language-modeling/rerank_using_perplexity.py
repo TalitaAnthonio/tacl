@@ -45,8 +45,8 @@ def rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, g
 
 
 def main(): 
+    # revised_afer_insertion 
     results_in_dict_format = convert_lines_to_dict_format(PATH_TO_FILE_IN_RESULTS)
-    
     
     bar = Bar('Processing ..', max=546)
     
@@ -56,14 +56,17 @@ def main():
             bar.next()
             generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
             revised_untill_insertion = results_in_dict_format[key]['revised_untill_insertion']
-            revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
+            if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
+                revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
+            else: 
+                revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity": reranked})
             
     bar.finish()
 
-    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+   with open(PATH_TO_FILE_OUT, 'w') as json_out: 
          json.dump(d, json_out)
 
 
