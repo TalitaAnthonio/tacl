@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 
 # the file with the results 
-PATH_TO_FILE_IN_RESULTS = "results-on-test-set.json"
+PATH_TO_FILE_IN_RESULTS = "results-on-test-dev-finetuned.json"
 # the file with the other information 
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
@@ -59,7 +59,7 @@ def main():
 
 
             # compute 
-            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=1)
+            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=100)
             if correct_or_not == 1: 
                 print(correct_reference, '\t', results_in_dict_format[key]['predictions']['generated_texts'])
             counter += correct_or_not
