@@ -62,13 +62,13 @@ def main():
                 revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
         
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
-            #d[key] = results_in_dict_format[key]
-            #d[key].update({"generated_text_perplexity": reranked})
+            d[key] = results_in_dict_format[key]
+            d[key].update({"generated_text_perplexity": reranked})
             
     bar.finish()
 
-    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-    #        json.dump(d, json_out)
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+            json.dump(d, json_out)
 
 
 main()
