@@ -3,11 +3,11 @@ from lm_scorer import GPTScorer
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 from progress.bar import Bar
 
-PATH_TO_FILE_IN_RESULTS = "results-on-dev-set.json"
-TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
-MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
+TOKENIZER = OpenAIGPTTokenizer.from_pretrained('finetuned-model')
+MODEL = OpenAIGPTLMHeadModel.from_pretrained('finetuned-model', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
-PATH_TO_FILE_OUT = "results-on-dev-set-reranked.json"
+PATH_TO_FILE_OUT = "results-on-dev-set-finetuned-reranked.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
