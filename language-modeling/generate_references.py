@@ -10,8 +10,9 @@
 from transformers import pipeline, set_seed, XLNetConfig, XLNetTokenizer, XLNetLMHeadModel,  OpenAIGPTTokenizer, OpenAIGPTLMHeadModel
 import json 
 import torch 
+import pdb 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-#device='cpu'
+device='cpu'
 torch.cuda.empty_cache()
 
 
@@ -35,6 +36,7 @@ num_beams = args['Beams']
 path_to_file_out = args['FilenameToWrite']
 path_to_file_in = args['FileIn']
 TRUNC_BY_WORD = False
+
 
 print("--------------")
 print('devices used', device)
@@ -121,7 +123,6 @@ def use_text_generation_truncate_by_sentence(text_to_predict, insertion_length):
            total_length += len(tokenized_sent.tolist()[0])
            if total_length < (512+insertion_length): 
               tokenized_text.append(tokenizer.decode(tokenized_sent.tolist()[0]))
-
        tokenized_text.reverse()
        text_to_predict = ' '.join(tokenized_text)
     else: 
@@ -149,35 +150,40 @@ def main():
         for revision_id, _ in single_insertions.items(): 
             if  single_insertions[revision_id]['Split'] == 'DEV': 
                 counter +=1 
-                insertion = single_insertions[revision_id]["insertion"]
-                print("running {0}".format(counter))
-                text_to_generate_from = single_insertions[revision_id]["language_model_text"]
-                #text_to_generate_from = single_insertions[revision_id]["revised_untill_insertion"]
-                max_insertion_length = single_insertions[revision_id]["reference-type"]
-                print("reference type is", max_insertion_length)
-                if max_insertion_length == 'unigram': 
-                    print("the length is a unigram")
-                    max_length = 1 
-                elif max_insertion_length == 'bigram': 
-                    max_length = 2 
-                else: 
-                    max_length = 3
 
-                if text_to_generate_from.split() != []: 
-                    try:
-                        if TRUNC_BY_WORD:  
-                            predicted_text = use_text_generation(text_to_generate_from, max_length)
-                        else: 
-                            predicted_text = use_text_generation_truncate_by_sentence(text_to_generate_from, max_length)
+                if counter == 20: 
+                    insertion = single_insertions[revision_id]["insertion"]
+                    print("running {0}".format(counter))
+                    text_to_generate_from =  single_insertions[revision_id]['par'].rstrip('\n') + single_insertions[revision_id]['revised_untill_insertion']
+                    #text_to_generate_from = single_insertions[revision_id]["revised_untill_insertion"]
+                    max_insertion_length = single_insertions[revision_id]["reference-type"]
+                    print("reference type is", max_insertion_length)
+                    if max_insertion_length == 'unigram': 
+                        print("the length is a unigram")
+                        max_length = 1 
+                    elif max_insertion_length == 'bigram': 
+                        max_length = 2 
+                    else: 
+                        max_length = 3
 
-                        dict_to_write =  {"predictions": predicted_text, "key": revision_id, "revised_sentence": single_insertions[revision_id]["revised_sentence"], "insertion": single_insertions[revision_id]["insertion"]}
-                        json_out.write(json.dumps(dict_to_write, default=str) + '\n')
-                    except IndexError: 
+                    if text_to_generate_from.split() != []: 
+                        try:
+                            if TRUNC_BY_WORD:
+                                text_to_generate_from = single_insertions[revision_id]["language_model_text"]  
+                                predicted_text = use_text_generation(text_to_generate_from, max_length)
+                            else: 
+                                context = single_insertions[revision_id]['par']
+                                text_to_generate_from = context.rstrip('\n') + single_insertions[revision_id]['revised_untill_insertion']
+                                predicted_text = use_text_generation_truncate_by_sentence(text_to_generate_from, max_length)
+
+                            dict_to_write =  {"predictions": predicted_text, "key": revision_id, "revised_sentence": single_insertions[revision_id]["revised_sentence"], "insertion": single_insertions[revision_id]["insertion"]}
+                            json_out.write(json.dumps(dict_to_write, default=str) + '\n')
+                        except IndexError: 
+                            dict_to_write = {"predictions": "check again", "key": revision_id}
+                            json_out.write(json.dumps(dict_to_write, default=str) + '\n') 
+
+                    else:
                         dict_to_write = {"predictions": "check again", "key": revision_id}
                         json_out.write(json.dumps(dict_to_write, default=str) + '\n') 
-
-                else:
-                    dict_to_write = {"predictions": "check again", "key": revision_id}
-                    json_out.write(json.dumps(dict_to_write, default=str) + '\n') 
 main()
 
