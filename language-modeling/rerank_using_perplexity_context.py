@@ -24,11 +24,21 @@ def convert_lines_to_dict_format(path_to_json_lines):
                 results_in_dict_format[key].update(data[key])
     return results_in_dict_format
 
+def trunc_text(text): 
+    inputs = TOKENIZER.encode(text, add_special_tokens=False, return_tensors="pt") 
+    inputs_truncated = inputs.tolist()[0]       
+    inputs_truncated = inputs_truncated[-512:]
+    decode = TOKENIZER.decode(inputs_truncated)
+    
+    return decode
+
 
 def compute_perplexity(generated_sequences): 
     generated_sequences_with_perplexity_plus_revised_collection = []
     for rank, sequence, insertion in generated_sequences:  
-        # bereken de perplexity 
+        # compute the perplexity. 
+        # truncate text if necessary 
+        sequence = trunc_text(sequence)
         perplexity_for_sentence = GPTScorer(TOKENIZER, MODEL, sequence=sequence).get_perplexity()
         generated_sequences_with_perplexity_plus_revised_collection.append([rank, sequence, insertion, perplexity_for_sentence])
     generated_sequences_with_perplexity_plus_revised_collection.sort(key=lambda x: x[-1], reverse=False)
