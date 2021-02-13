@@ -26,11 +26,24 @@ def convert_lines_to_dict_format(path_to_json_lines):
 
 def trunc_text(text): 
     inputs = TOKENIZER.encode(text, add_special_tokens=False, return_tensors="pt") 
-    inputs_truncated = inputs.tolist()[0]       
-    inputs_truncated = inputs_truncated[-512:]
-    decode = TOKENIZER.decode(inputs_truncated)
-    
-    return decode
+    inputs_truncated = inputs.tolist()[0]
+
+    tokenized_text = []
+    total_length = 0 
+    if len(inputs_truncated) >= 512: 
+       context_line_splitted = text.split('\n')
+       print(context_line_splitted)
+       context_line_splitted.reverse()
+       for sent in context_line_splitted: 
+           tokenized_sent = TOKENIZER.encode(sent, add_special_tokens=False, return_tensors="pt") 
+           total_length += len(tokenized_sent.tolist()[0])
+           if total_length < 512: 
+              tokenized_text.append(TOKENIZER.decode(tokenized_sent.tolist()[0]))
+
+       tokenized_text.reverse()
+       return ' '.join(tokenized_text)
+    else: 
+        return text.replace('\n', ' ')
 
 
 def compute_perplexity(generated_sequences): 
@@ -38,7 +51,10 @@ def compute_perplexity(generated_sequences):
     for rank, sequence, insertion in generated_sequences:  
         # compute the perplexity. 
         # truncate text if necessary 
-        sequence = trunc_text(sequence)
+        sequence = trunc_text(sequence) 
+
+        # remove timestamps 
+        sequence = remove_timestamps(sequence)
         perplexity_for_sentence = GPTScorer(TOKENIZER, MODEL, sequence=sequence).get_perplexity()
         generated_sequences_with_perplexity_plus_revised_collection.append([rank, sequence, insertion, perplexity_for_sentence])
     generated_sequences_with_perplexity_plus_revised_collection.sort(key=lambda x: x[-1], reverse=False)
@@ -69,20 +85,21 @@ def main():
     bar = Bar('Processing ..', max=len(results_in_dict_format.keys()))
     
     d = {}
+    counter = 0 
     for key, _ in results_in_dict_format.items(): 
         if results_in_dict_format[key]['Split'] == 'DEV': 
             bar.next()
-            context = results_in_dict_format[key]['language_model_text']
-            
+            context = results_in_dict_format[key]['par']
             generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
-
-            revised_untill_insertion = context + ' ' + results_in_dict_format[key]['revised_untill_insertion']
+            revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
+            print(revised_untill_insertion)
             if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
                 revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
             else: 
                 revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
         
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
+            
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity_context": reranked})
             
