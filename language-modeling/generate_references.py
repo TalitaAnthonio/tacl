@@ -114,7 +114,7 @@ def use_text_generation_truncate_by_sentence(text_to_predict, insertion_length):
     tokenized_text = []
     total_length = 0 
     if len(inputs_truncated) >= 512: 
-       context_line_splitted = text.split('\n')
+       context_line_splitted = text_to_predict.split('\n')
        context_line_splitted.reverse()
        for sent in context_line_splitted: 
            tokenized_sent = tokenizer.encode(sent, add_special_tokens=False, return_tensors="pt") 
