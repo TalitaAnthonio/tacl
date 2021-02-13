@@ -34,6 +34,7 @@ num_return_sequences = args['ReturnSequences']
 num_beams = args['Beams']
 path_to_file_out = args['FilenameToWrite']
 path_to_file_in = args['FileIn']
+TRUNC_BY_WORD = False
 
 print("--------------")
 print('devices used', device)
@@ -48,16 +49,18 @@ print('device range', torch.cuda.device_count())
 with open(path_to_file_in, "r") as json_in: 
      single_insertions = json.load(json_in)
 
+if model_to_use == 'openai-gpt': 
+    model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
+    tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
+else: 
+    model_path='xlnet-base-cased'
+    model =   XLNetLMHeadModel.from_pretrained(model_path, cache_dir="../../model").to(device)
+    tokenizer = XLNetTokenizer.from_pretrained(model_path, cache_dir="../../model")
+
+
+
 # always used the defautl configuration file 
 def use_text_generation(text_to_predict, insertion_length): 
-    if model_to_use == 'openai-gpt': 
-        model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
-        tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
-    else: 
-        model_path='xlnet-base-cased'
-        model =   XLNetLMHeadModel.from_pretrained(model_path, cache_dir="../../model").to(device)
-        tokenizer = XLNetTokenizer.from_pretrained(model_path, cache_dir="../../model")
-
     
     tokenized_text =  tokenizer.tokenize(text_to_predict)
     print("length of the tokenized text", len(tokenized_text)) 
@@ -103,6 +106,42 @@ def use_text_generation(text_to_predict, insertion_length):
 
     return {"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs}
 
+
+def use_text_generation_truncate_by_sentence(text_to_predict, insertion_length): 
+    inputs = tokenizer.encode(text_to_predict, add_special_tokens=False, return_tensors="pt") 
+    inputs_truncated = inputs.tolist()[0]
+
+    tokenized_text = []
+    total_length = 0 
+    if len(inputs_truncated) >= 512: 
+       context_line_splitted = text.split('\n')
+       context_line_splitted.reverse()
+       for sent in context_line_splitted: 
+           tokenized_sent = tokenizer.encode(sent, add_special_tokens=False, return_tensors="pt") 
+           total_length += len(tokenized_sent.tolist()[0])
+           if total_length < (512+insertion_length): 
+              tokenized_text.append(tokenizer.decode(tokenized_sent.tolist()[0]))
+
+       tokenized_text.reverse()
+       text_to_predict = ' '.join(tokenized_text)
+    else: 
+        text_to_predict = text_to_predict    
+    inputs = tokenizer.encode(text_to_predict, add_special_tokens=False, return_tensors="pt") 
+    encoded_inputs = tokenizer.decode(inputs[0])
+
+    prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
+    #print(inputs.size()[1]+insertion_length)
+    if device != 'cpu': 
+        outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
+        model.to(device)
+
+    else: 
+        outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
+
+    return {"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs}
+
+
+
 def main():
     counter = 0 
 
@@ -125,8 +164,12 @@ def main():
                     max_length = 3
 
                 if text_to_generate_from.split() != []: 
-                    try: 
-                        predicted_text = use_text_generation(text_to_generate_from, max_length)
+                    try:
+                        if TRUNC_BY_WORD:  
+                            predicted_text = use_text_generation(text_to_generate_from, max_length)
+                        else: 
+                            predicted_text = use_text_generation_truncate_by_sentence(text_to_generate_from, max_length)
+
                         dict_to_write =  {"predictions": predicted_text, "key": revision_id, "revised_sentence": single_insertions[revision_id]["revised_sentence"], "insertion": single_insertions[revision_id]["insertion"]}
                         json_out.write(json.dumps(dict_to_write, default=str) + '\n')
                     except IndexError: 
