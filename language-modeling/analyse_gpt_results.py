@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 
 # the file with the results 
-PATH_TO_FILE_IN_RESULTS = "results-on-test-dev-finetuned.json"
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
 # the file with the other information 
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
@@ -19,11 +19,11 @@ with open(PATH_TO_FILE_IN, 'r') as json_in:
 
 def compute_overlap(generated_sequences, correct_insertion, top_k=100): 
     "function to check if the reference is in the generated sequences"
-    generated_sequences_stripped = [sequence.lstrip() for sequence in generated_sequences]
+    generated_sequences_stripped = [sequence.lstrip().lower() for sequence in generated_sequences]
     generated_sequences_stripped = generated_sequences_stripped[:top_k]
     #print("Top {0}: {1}".format(top_k, generated_sequences_stripped))
     matches = []
-    if correct_insertion in generated_sequences_stripped: 
+    if correct_insertion.lower() in generated_sequences_stripped: 
         return 1 
     else: 
         return 0 
@@ -48,7 +48,7 @@ def main():
     total = 0 
     bar = Bar('Processing ...', max=len(results_in_dict_format.keys()))
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'TEST': 
+        if results_in_dict_format[key]['Split'] == 'DEV': 
             total +=1 
             #bar.next()
             top100_predictions = results_in_dict_format[key]['predictions']['generated_texts']
