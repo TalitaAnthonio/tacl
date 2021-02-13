@@ -32,7 +32,6 @@ def trunc_text(text):
     total_length = 0 
     if len(inputs_truncated) >= 512: 
        context_line_splitted = text.split('\n')
-       print(context_line_splitted)
        context_line_splitted.reverse()
        for sent in context_line_splitted: 
            tokenized_sent = TOKENIZER.encode(sent, add_special_tokens=False, return_tensors="pt") 
@@ -92,7 +91,6 @@ def main():
             context = results_in_dict_format[key]['par']
             generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
             revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
-            print(revised_untill_insertion)
             if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
                 revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
             else: 
