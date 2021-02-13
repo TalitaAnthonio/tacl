@@ -121,7 +121,7 @@ def use_text_generation_truncate_by_sentence(text_to_predict, insertion_length):
        for sent in context_line_splitted: 
            tokenized_sent = tokenizer.encode(sent, add_special_tokens=False, return_tensors="pt") 
            total_length += len(tokenized_sent.tolist()[0])
-           if total_length < (512+insertion_length): 
+           if total_length < (512-insertion_length): 
               tokenized_text.append(tokenizer.decode(tokenized_sent.tolist()[0]))
        tokenized_text.reverse()
        text_to_predict = ' '.join(tokenized_text)
