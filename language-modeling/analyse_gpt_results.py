@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 
 # the file with the results 
-PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
+PATH_TO_FILE_IN_RESULTS = "dev-set-truncated-by-sentence.json"
 # the file with the other information 
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
