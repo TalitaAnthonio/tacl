@@ -37,7 +37,8 @@ def trunc_text(text):
        for sent in context_line_splitted: 
            tokenized_sent = TOKENIZER.encode(sent, add_special_tokens=False, return_tensors="pt") 
            total_length += len(tokenized_sent.tolist()[0])
-           if total_length < 511: 
+           #print(total_length)
+           if total_length < 510: 
               tokenized_text.append(TOKENIZER.decode(tokenized_sent.tolist()[0]))
        tokenized_text.reverse()
        return ' '.join(tokenized_text)
@@ -51,9 +52,9 @@ def compute_perplexity(generated_sequences):
         # compute the perplexity. 
         # truncate text if necessary 
         sequence = trunc_text(sequence) 
-
-        # remove timestamps 
         sequence = remove_timestamps(sequence)
+        # remove timestamps 
+        
         perplexity_for_sentence = GPTScorer(TOKENIZER, MODEL, sequence=sequence).get_perplexity()
         generated_sequences_with_perplexity_plus_revised_collection.append([rank, sequence, insertion, perplexity_for_sentence])
     generated_sequences_with_perplexity_plus_revised_collection.sort(key=lambda x: x[-1], reverse=False)
@@ -89,19 +90,18 @@ def main():
         if results_in_dict_format[key]['Split'] == 'TEST': 
             bar.next()
             counter +=1 
-            if counter == 333: 
-                context = results_in_dict_format[key]['par']
-                generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
-                revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
-                if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
-                    revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
-                else: 
-                    revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
+            context = results_in_dict_format[key]['par']
+            generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
+            revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
+            if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
+                revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
+            else: 
+                revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
+        
+            reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
             
-                reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
-                
-                d[key] = results_in_dict_format[key]
-                d[key].update({"generated_text_perplexity_context": reranked})
+            d[key] = results_in_dict_format[key]
+            d[key].update({"generated_text_perplexity_context": reranked})
             
     bar.finish()
 
