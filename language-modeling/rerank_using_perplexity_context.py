@@ -2,12 +2,13 @@ import json
 from lm_scorer import GPTScorer
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 from progress.bar import Bar
+import pdb
 
-PATH_TO_FILE_IN_RESULTS = "results-on-dev-set.json"
-TOKENIZER = OpenAIGPTTokenizer.from_pretrained('finetuned-model')
-MODEL = OpenAIGPTLMHeadModel.from_pretrained('finetuned-model', return_dict=True).eval()
+PATH_TO_FILE_IN_RESULTS = "results-on-test-set.json"
+TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
+MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
-PATH_TO_FILE_OUT = "results-on-dev-set-reranked-context.json"
+PATH_TO_FILE_OUT = "results-on-test-set-reranked-context.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
@@ -36,9 +37,8 @@ def trunc_text(text):
        for sent in context_line_splitted: 
            tokenized_sent = TOKENIZER.encode(sent, add_special_tokens=False, return_tensors="pt") 
            total_length += len(tokenized_sent.tolist()[0])
-           if total_length < 512: 
+           if total_length < 511: 
               tokenized_text.append(TOKENIZER.decode(tokenized_sent.tolist()[0]))
-
        tokenized_text.reverse()
        return ' '.join(tokenized_text)
     else: 
@@ -86,20 +86,22 @@ def main():
     d = {}
     counter = 0 
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'DEV': 
+        if results_in_dict_format[key]['Split'] == 'TEST': 
             bar.next()
-            context = results_in_dict_format[key]['par']
-            generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
-            revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
-            if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
-                revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
-            else: 
-                revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
-        
-            reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
+            counter +=1 
+            if counter == 333: 
+                context = results_in_dict_format[key]['par']
+                generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
+                revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
+                if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
+                    revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
+                else: 
+                    revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
             
-            d[key] = results_in_dict_format[key]
-            d[key].update({"generated_text_perplexity_context": reranked})
+                reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
+                
+                d[key] = results_in_dict_format[key]
+                d[key].update({"generated_text_perplexity_context": reranked})
             
     bar.finish()
 
