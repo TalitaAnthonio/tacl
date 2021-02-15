@@ -41,6 +41,10 @@ def rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, g
         full_sequence_with_generated_insertion = "{0} {1} {2}".format(revised_untill_insertion, generated_sequence.lstrip(), revised_after_insertion)
         generated_sequences_within_sentence.append([position, full_sequence_with_generated_insertion, generated_sequence])
     rerank_with_perplexity = compute_perplexity(generated_sequences_within_sentence)
+    print("================= reranked ===================")
+    print("{0}\t{1}\t{2}\t{3}\t{4}".format("current pos", "prev pos", "full sequence", "generated referece", "perplexity"))
+    for index, elem in enumerate(rerank_with_perplexity,1): 
+        print("{0}\t{1}\t{2}\t{3}\t{4}".format(index, elem[0], elem[1], elem[2], elem[3], elem[-1]))
     return [elem[2] for elem in rerank_with_perplexity]
 
 
@@ -51,9 +55,11 @@ def main():
     bar = Bar('Processing ..', max=len(results_in_dict_format.keys()))
     
     d = {}
+    counter = 0 
     for key, _ in results_in_dict_format.items(): 
         if results_in_dict_format[key]['Split'] == 'DEV': 
             bar.next()
+            counter +=1 
             generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
             revised_untill_insertion = results_in_dict_format[key]['revised_untill_insertion']
             if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
@@ -64,11 +70,14 @@ def main():
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity": reranked})
+            print("======================================")
+            if counter == 10: 
+                break 
             
     bar.finish()
 
-    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-            json.dump(d, json_out)
+    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+    #        json.dump(d, json_out)
 
 
 main()

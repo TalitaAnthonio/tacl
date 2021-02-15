@@ -1,6 +1,8 @@
 import json 
 
-PATH_TO_RERANKED_FILE = "results-on-dev-set-reranked-context-finetuned.json"
+#PATH_TO_RERANKED_FILE = "results-on-dev-set-reranked-context-finetuned.json"
+PATH_TO_RERANKED_FILE = "results-on-test-set-reranked-context-finetuned.json"
+
 
 with open(PATH_TO_RERANKED_FILE, 'r') as json_in: 
      results_in_dict_format = json.load(json_in)
@@ -21,7 +23,7 @@ def main():
     total_correct = 0 
     total = 0  
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'DEV': 
+        if results_in_dict_format[key]['Split'] == 'TEST': 
             total +=1 
             top100_predictions = results_in_dict_format[key]['generated_text_perplexity_context']
             # do the extra step here 

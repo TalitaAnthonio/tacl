@@ -4,11 +4,11 @@ from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 from progress.bar import Bar
 import pdb
 
-PATH_TO_FILE_IN_RESULTS = "results-on-test-set.json"
-TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
-MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
+TOKENIZER = OpenAIGPTTokenizer.from_pretrained('finetuned-model')
+MODEL = OpenAIGPTLMHeadModel.from_pretrained('finetuned-model', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
-PATH_TO_FILE_OUT = "results-on-test-set-reranked-context.json"
+PATH_TO_FILE_OUT = "results-on-test-dev-finetuned-reranked.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
@@ -67,6 +67,10 @@ def rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, g
         full_sequence_with_generated_insertion = "{0} {1} {2}".format(revised_untill_insertion, generated_sequence.lstrip(), revised_after_insertion)
         generated_sequences_within_sentence.append([position, full_sequence_with_generated_insertion, generated_sequence])
     rerank_with_perplexity = compute_perplexity(generated_sequences_within_sentence)
+    print("================= reranked ===================")
+    print("{0}\t{1}\t{2}\t{3}\t{4}".format("current pos", "prev pos", "full sequence", "generated referece", "perplexity"))
+    for index, elem in enumerate(rerank_with_perplexity,1): 
+        print("{0}\t{1}\t{2}\t{3}\t{4}".format(index, elem[0], elem[1], elem[2], elem[3], elem[-1]))
     return [elem[2] for elem in rerank_with_perplexity]
 
 def remove_timestamps(context): 
@@ -87,7 +91,7 @@ def main():
     d = {}
     counter = 0 
     for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'TEST': 
+        if results_in_dict_format[key]['Split'] == 'DEV': 
             bar.next()
             counter +=1 
             context = results_in_dict_format[key]['par']
@@ -98,15 +102,19 @@ def main():
             else: 
                 revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
         
+            print("correct reference", results_in_dict_format[key]['reference'])
             reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
             
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity_context": reranked})
             
+            if counter == 10: 
+               break 
+            
     bar.finish()
 
-    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-            json.dump(d, json_out)
+    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+    #        json.dump(d, json_out)
 
 
 main()
