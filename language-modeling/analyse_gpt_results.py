@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 
 # the file with the results 
-PATH_TO_FILE_IN_RESULTS = "dev-set-truncated-by-sentence.json"
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
 # the file with the other information 
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
@@ -44,6 +44,7 @@ def main():
 
     results_in_dict_format = convert_lines_to_dict_format(PATH_TO_FILE_IN_RESULTS)
 
+    errors = {}
     counter = 0 
     total = 0 
     bar = Bar('Processing ...', max=len(results_in_dict_format.keys()))
@@ -54,6 +55,7 @@ def main():
             top100_predictions = results_in_dict_format[key]['predictions']['generated_texts']
             # do the extra step here 
             correct_reference = results_in_dict_format[key]['reference']
+
             if type(correct_reference) != str: 
                correct_reference = ' '.join(correct_reference)
 
@@ -62,12 +64,18 @@ def main():
             correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=100)
             if correct_or_not == 1: 
                 print(correct_reference, '\t', results_in_dict_format[key]['predictions']['generated_texts'])
+            else: 
+                errors[key] = results_in_dict_format[key]
             counter += correct_or_not
+
+    print(len(errors.keys()))
 
     #bar.finish()
     print("total correct", counter)          
     print("total in data", total)
     print("percentage", counter/total)
 
-
+    with open('errors_in_dev.json', 'w') as json_out: 
+         json.dump(errors, json_out)
+ 
 main()
