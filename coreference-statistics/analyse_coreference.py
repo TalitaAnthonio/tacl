@@ -7,6 +7,10 @@ import numpy as np
 PATH_TO_BIGRAMS = "../data/bigram_atomic_edits_coref.json"
 PATH_TO_TRIGRAMS = "../data/trigram_atomic_edits_coref_info_filtered.json"
 PATH_TO_UNIGRAMS = "../data/unigram_atomic_edits_coref.json" 
+KEYS_TO_EXCLUDE = ["Answer_Common_Atheists_Questions_About_Christianity23", 
+"Celebrate_Thanksgiving62", 
+"Dress_in_American_1940s_Fashion12",
+"Know_That_You_Are_Going_to_Heaven_As_a_Christian47"]
 
 def read_file(path_to_file): 
     with open(path_to_file, 'r') as json_in: 
@@ -43,10 +47,11 @@ def main():
     # how often the entities are mentioned 
     chain_length = []
     for key, _ in data.items(): 
-        corefchain_object = CorefChain(data[key]['CorefChain'])
-        distances.append(corefchain_object.distance_to_reference)
-        # minus 1 to exclude the implicit reference itself 
-        chain_length.append(corefchain_object.chainlength-1)
+        if key not in KEYS_TO_EXCLUDE: 
+            corefchain_object = CorefChain(data[key]['CorefChain'])
+            distances.append(corefchain_object.distance_to_reference)
+            # minus 1 to exclude the implicit reference itself 
+            chain_length.append(corefchain_object.chainlength-1)
 
     
     print("COREF DISTANCE FREQUENCIES .....")
