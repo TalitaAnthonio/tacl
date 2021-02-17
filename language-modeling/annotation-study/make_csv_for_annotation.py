@@ -36,13 +36,13 @@ def make_dict(generated_line, correct_line, context, filename, correct_seq, gene
 
  
     if element_that_will_be_presented_first == 0:
-        elements = {"Line1": generated_line, "Answer1":generated, "Answer2": correct_seq, "Context1": (context.strip('\n') + '<br />' +  generated_line).replace('\n', '<br />'),
-                    "Line2": correct_line, "Context2":  (context.strip('\n') + '<br />' + correct_line).replace('\n', '<br />'), "Info": "generated",
+        elements = {"Line1": generated_line, "Answer1":generated, "Answer2": correct_seq, "Context1": context.rstrip('\n').replace('\n', '<br />'),
+                    "Line2": correct_line, "Context2": context.rstrip('\n').replace('\n', '<br />'), "Info": "generated",
                     "Differences": get_differences(correct_seq, generated, "generated"), "Title": filename}
     else:
 
-        elements = {"Line2": generated_line, "Answer1": correct_seq, "Answer2":  generated, "Context2": (context.strip('\n')  + '<br />' + generated_line).replace('\n', '<br />'),
-                    "Line1": correct_line, "Context1":  (context.strip('\n') + '<br />' + correct_line).replace('\n', '<br />'), "Info": "human-generated",
+        elements = {"Line2": generated_line, "Answer1": correct_seq, "Answer2":  generated, "Context2": context.rstrip('\n').replace('\n', '<br />'),
+                    "Line1": correct_line, "Context1":  context.rstrip('\n').replace('\n', '<br />') , "Info": "human-generated",
                     "Differences": get_differences(correct_seq, generated, "human_generated"), "Title": filename}
     return elements
 
@@ -96,23 +96,23 @@ def main():
             revised_after_insertion = data[key]['revised_after_insertion']
 
         
-        correct_line = data[key]['revised_untill_insertion'] + ' ' + correct_reference + ' ' + revised_after_insertion
+        correct_line = data[key]['revised_untill_insertion'] + ' ' + "<b>"  +  correct_reference + "</b>"  + ' ' + revised_after_insertion
         generated_sequences = [sequence.lstrip().lower() for sequence in data[key]['predictions']['generated_texts']] 
         first_generated_reference= generated_sequences[0]
-        generated_line = data[key]['revised_untill_insertion'] + ' ' + first_generated_reference + ' ' + revised_after_insertion
+        generated_line = data[key]['revised_untill_insertion'] + ' ' + "<b>" + first_generated_reference + "</b>" ' ' + revised_after_insertion
 
         print(data[key]['par'])
         print('correct line', correct_line)
 
 
-        context = trunc_text(data[key]['par'])
+        context = trunc_text(data[key]['par'].rstrip('\n'))
         row = make_dict(generated_line, correct_line, context, filename, correct_reference, first_generated_reference)
         collection.append(row)
 
-    #df = pd.DataFrame(collection)
+    df = pd.DataFrame(collection)
     #print(df)
-    ##df = df.replace('\n',' ', regex=True)
-    #df.to_csv('annotation-set-trial.csv', sep=',', index=False, line_terminator=None)
+    df = df.replace('\n',' ', regex=True)
+    df.to_csv('annotation-set-trial.csv', sep=',', index=False, line_terminator=None)
     
     #print(counter)
 main()
