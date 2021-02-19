@@ -79,6 +79,6 @@ def main():
 
     print(len(correct_cases.keys()))
     with open('correct_cases_dev_finetuned.json', 'w') as json_out: 
-         json.dump(errors, json_out)
+         json.dump(correct_cases, json_out)
  
 main()
