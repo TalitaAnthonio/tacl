@@ -45,6 +45,7 @@ def main():
     results_in_dict_format = convert_lines_to_dict_format(PATH_TO_FILE_IN_RESULTS)
 
     errors = {}
+    correct_cases = {}
     counter = 0 
     total = 0 
     bar = Bar('Processing ...', max=len(results_in_dict_format.keys()))
@@ -61,9 +62,10 @@ def main():
 
 
             # compute 
-            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=100)
+            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=10)
             if correct_or_not == 1: 
                 print(correct_reference, '\t', results_in_dict_format[key]['predictions']['generated_texts'])
+                correct_cases[key] = results_in_dict_format[key]
             else: 
                 errors[key] = results_in_dict_format[key]
             counter += correct_or_not
@@ -75,7 +77,8 @@ def main():
     print("total in data", total)
     print("percentage", counter/total)
 
-    with open('errors_in_dev.json', 'w') as json_out: 
+    print(len(correct_cases.keys()))
+    with open('correct_cases_dev_finetuned.json', 'w') as json_out: 
          json.dump(errors, json_out)
  
 main()
