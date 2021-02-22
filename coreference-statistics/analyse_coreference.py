@@ -47,6 +47,11 @@ def main():
     # how often the entities are mentioned 
     chain_length = []
     for key, _ in data.items(): 
+        if key in KEYS_TO_EXCLUDE: 
+           print(data[key]['reference-type'], data[key]['reference'], data[key]['insertion'])
+
+    """
+    for key, _ in data.items(): 
         if key not in KEYS_TO_EXCLUDE: 
             corefchain_object = CorefChain(data[key]['CorefChain'])
             distances.append(corefchain_object.distance_to_reference)
@@ -67,7 +72,7 @@ def main():
     # divide by the total number of 
     calculate_percentage(freq_dict_chains, total)
     print(np.sum([value for key, value in  dict(freq_dict_chains).items()]))
-
+    """
 
 
 main()

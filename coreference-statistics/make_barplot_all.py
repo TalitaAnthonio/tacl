@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 barWidth = 0.25
  
 # set height of bar
-bars1 = [2599, 1137, 120] # unigrams 
-bars2 = [0,700,1372] # bigrams 
+bars1 = [2599, 1137, 118] # unigrams 
+bars2 = [0,700,1370] # bigrams 
 bars3 = [0,0,90] # trigrams 
  
 # Set position of bar on X axis
