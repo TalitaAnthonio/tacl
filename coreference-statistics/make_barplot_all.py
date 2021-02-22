@@ -67,5 +67,5 @@ plt.xticks([r + barWidth for r in range(len(bars1))], ['unigram', 'bigram', 'tri
 
 # Create legend & Show graphic
 plt.legend()
-plt.show()
+#plt.show()
 plt.savefig('reference-frequency.jpg', format='jpg', dpi=1200)
