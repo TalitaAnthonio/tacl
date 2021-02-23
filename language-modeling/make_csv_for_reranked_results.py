@@ -1,6 +1,6 @@
 import json 
 
-PATH_TO_RERANKED_FILE = "results-on-dev-set-finetuned-reranked.json"
+PATH_TO_RERANKED_FILE = "results-on-dev-set-reranked.json"
 #PATH_TO_RERANKED_FILE = "results-on-test-set-reranked-context-finetuned.json"
 MODEL_NAME = "GPT+Finetuning+S-perplexity"
 
@@ -36,7 +36,7 @@ def main():
 
 
             # compute 
-            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=10)
+            correct_or_not = compute_overlap(top100_predictions, correct_reference, top_k=1)
             if correct_or_not == 1: 
                 correct_or_not_value = True 
             else: 
