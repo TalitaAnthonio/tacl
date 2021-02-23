@@ -12,7 +12,7 @@ TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
 MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
 
-PATH_TO_FILE_OUT = "results-on-test-dev-reranked-context-test.json"
+PATH_TO_FILE_OUT = "results-on-dev-reranked-context-test.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
