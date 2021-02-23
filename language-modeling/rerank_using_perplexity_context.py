@@ -4,11 +4,12 @@ from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 from progress.bar import Bar
 import pdb
 
-PATH_TO_FILE_IN_RESULTS = "results-on-dev-set-finetuned.json"
-TOKENIZER = OpenAIGPTTokenizer.from_pretrained('finetuned-model')
-MODEL = OpenAIGPTLMHeadModel.from_pretrained('finetuned-model', return_dict=True).eval()
+PATH_TO_FILE_IN_RESULTS = "results-on-dev-set.json"
+TOKENIZER = OpenAIGPTTokenizer.from_pretrained('openai-gpt')
+MODEL = OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', return_dict=True).eval()
 PATH_TO_FILE_IN =  "../data/references_for_lm.json"
-PATH_TO_FILE_OUT = "results-on-test-dev-finetuned-reranked.json"
+
+PATH_TO_FILE_OUT = "results-on-test-dev-reranked-context-test.json"
 
 with open(PATH_TO_FILE_IN, 'r') as json_in: 
      data = json.load(json_in)
@@ -108,13 +109,10 @@ def main():
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity_context": reranked})
             
-            if counter == 10: 
-               break 
-            
     bar.finish()
 
-    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-    #        json.dump(d, json_out)
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+            json.dump(d, json_out)
 
 
 main()
