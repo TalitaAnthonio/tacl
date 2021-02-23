@@ -94,28 +94,29 @@ def main():
     
     d = {}
     counter = 0 
-    for key, _ in results_in_dict_format.items(): 
-        if results_in_dict_format[key]['Split'] == 'DEV': 
-            bar.next()
-            counter +=1 
-            context = results_in_dict_format[key]['par']
-            generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
-            revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
-            if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
-                revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
-            else: 
-                revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
-        
-            print("correct reference", results_in_dict_format[key]['reference'])
-            reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
+    with open(PATH_TO_FILE_OUT, "w") as json_out: 
+        for key, _ in results_in_dict_format.items(): 
+            if results_in_dict_format[key]['Split'] == 'DEV': 
+                bar.next()
+                counter +=1 
+                context = results_in_dict_format[key]['par']
+                generated_sequences = results_in_dict_format[key]['predictions']['generated_texts']
+                revised_untill_insertion = context.rstrip('\n')  + results_in_dict_format[key]['revised_untill_insertion']
+                if 'revised_after_insertion' not in results_in_dict_format[key].keys(): 
+                    revised_after_insertion = results_in_dict_format[key]['revised_afer_insertion']
+                else: 
+                    revised_after_insertion = results_in_dict_format[key]['revised_after_insertion']
             
-            d[key] = results_in_dict_format[key]
-            d[key].update({"generated_text_perplexity_context": reranked})
-            
-    bar.finish()
+                print("correct reference", results_in_dict_format[key]['reference'])
+                reranked = rerank_using_perplexity(revised_untill_insertion, revised_after_insertion, generated_sequences)
+                
+                d[key] = results_in_dict_format[key]
+                d[key].update({"generated_text_perplexity_context": reranked, "key": key})
+                json_out.write(json.dumps(d[key], default=str) + '\n') 
+                
+        bar.finish()
 
-    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-            json.dump(d, json_out)
+
 
 
 main()
