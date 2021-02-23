@@ -110,11 +110,14 @@ def main():
             counter += correct_or_not
 
             gpt_results = check_correctness(PATH_TO_OTHER, "GPT", key)
-
+            if type(results_in_dict_format[key]["revised_sentence"]) == list: 
+               revised_sentence = ' '.join(results_in_dict_format[key]["revised_sentence"])
+            else: 
+                revised_sentence  = results_in_dict_format[key]["revised_sentence"]
 
             data_for_prediction_csv[key].update({"CorrectReference": correct_reference, 
             "LeftContext": par, "GPTPred": gpt_results["GPTPred"], "GPTCorrect": gpt_results["GPTCorrect"], 
-            "key": key, "GPT+FinetuningPred": top100_predictions[0].lstrip().lower()})
+            "key": key, "GPT+FinetuningPred": top100_predictions[0].lstrip().lower(), "RevisedSentence": revised_sentence})
 
 
     #bar.finish()
