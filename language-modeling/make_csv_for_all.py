@@ -56,14 +56,14 @@ def main():
 
     print(df)
     print(df.columns)
-    df['GPT+S-perplexityPred'] = df['GPT+S-perplexityPred'].apply(lambda x:x[0:10])
-    df['GPT+Finetuning+S-perplexityPred'] = df['GPT+Finetuning+S-perplexityPred'].apply(lambda x:x[0:10])
-    df['GPT+Finetuning+P-perplexityPred'] = df['GPT+Finetuning+P-perplexityPred'].apply(lambda x:x[0:10])
-    df['GPTPred'] = df['GPTPred'].apply(lambda x:x[0:10])
-    df['GPT+P-perplexityPred'] = df['GPT+P-perplexityPred'].apply(lambda x:x[0:10])
-    df['GPT+FinetuningPred'] = df['GPT+FinetuningPred'].apply(lambda x:x[0:10])
+    df['GPT+S-perplexityPred'] = df['GPT+S-perplexityPred'].apply(lambda x:x[0:100])
+    df['GPT+Finetuning+S-perplexityPred'] = df['GPT+Finetuning+S-perplexityPred'].apply(lambda x:x[0:100])
+    df['GPT+Finetuning+P-perplexityPred'] = df['GPT+Finetuning+P-perplexityPred'].apply(lambda x:x[0:100])
+    df['GPTPred'] = df['GPTPred'].apply(lambda x:x[0:100])
+    df['GPT+P-perplexityPred'] = df['GPT+P-perplexityPred'].apply(lambda x:x[0:100])
+    df['GPT+FinetuningPred'] = df['GPT+FinetuningPred'].apply(lambda x:x[0:100])
     print(df)
-    df.to_csv("test100.csv", sep='\t', index=False)
+    df.to_csv("allpredictions100.csv", sep='\t', index=False)
 
 
 main()
