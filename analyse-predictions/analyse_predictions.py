@@ -1,6 +1,6 @@
 import json 
 import pdb 
-from tools import check_if_filler_occurs, tokenize
+from tools import check_if_filler_occurs, tokenize, add_pos_tagging
 import numpy as np 
 
 
@@ -23,6 +23,7 @@ def check_pos_of_filler(predictions, correct_filler, topk=10):
 def main(): 
     total_found = 0 
     total_found_other_ranking = 0 
+    index_errors = 0 
     for key, _ in data.items(): 
         best_model_pred = [elem.strip().lower() for elem in data[key]['GPT+Finetuning+P-perplexityPred']]
         second_best_model_pred = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
@@ -40,8 +41,17 @@ def main():
         sorted_d = dict(sorted(d.items(), key=lambda item: item[1], reverse=True))
         occurs_or_not = check_pos_of_filler(list(sorted_d.keys()), data[key]['CorrectReference'])
         total_found_other_ranking += occurs_or_not
-
-        print(list(sorted_d.keys()))
+        
+        # do something with  POS TAGS --------------
+        
+        index = data[key]['index_of_insertion']
+        
+        if data[key]['reference-type'] == 'unigram': 
+            pdb.set_trace()
+            for prediction in second_best_model_pred: 
+                res = add_pos_tagging(data[key]['revised_untill_insertion'], prediction, data[key]['revised_after_insertion'])
+                print(prediction, res[index], res)
+        print('---------------------------------------------')
 
 
         
@@ -51,4 +61,8 @@ def main():
     print(total_found_other_ranking)
 
 
+
+
+
 main()
+

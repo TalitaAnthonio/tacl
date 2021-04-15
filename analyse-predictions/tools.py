@@ -44,6 +44,14 @@ def tokenize(text_to_tokenize, ngrams='unigram'):
         return tokenized_by_ngram            
 
 
+def add_pos_tagging(before_reference, filler, after_reference): 
+    # add pos tags to the sentence + the reference
+    # should return: the pos_tag of the filler 
+
+    sent_to_tag = before_reference + ' ' + filler + ' ' +  after_reference 
+    tagged = tokenizer(sent_to_tag)
+    return [[token.text, token.tag_] for token in tagged]
+
 
 
 if __name__ == "__main__":
