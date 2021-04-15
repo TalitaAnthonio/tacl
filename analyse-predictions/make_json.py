@@ -43,6 +43,13 @@ for key, _ in model1.items():
     
     merged_dict[key]['revised_after_insertion'] = revised_after_insertion
 
+    if 'index_of_reference' in other_info[key].keys(): 
+        merged_dict[key]['index_of_insertion'] = other_info[key]['index_of_reference']
+    else: 
+        merged_dict[key]['index_of_insertion'] = other_info[key]['beginindex']
+
+    merged_dict[key]['reference-type'] = other_info[key]['reference-type']
+
 
 with open('bestmodels_predictions.json', 'w') as json_out: 
      json.dump(merged_dict, json_out)
