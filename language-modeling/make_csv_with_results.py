@@ -117,7 +117,7 @@ def main():
 
             data_for_prediction_csv[key].update({"CorrectReference": correct_reference, 
             "LeftContext": par, "GPTPred": gpt_results["GPTPred"], "GPTCorrect": gpt_results["GPTCorrect"], 
-            "key": key, "GPT+FinetuningPred": top100_predictions[0].lstrip().lower(), "RevisedSentence": revised_sentence})
+            "key": key, "GPT+FinetuningPred": top100_predictions[0:100], "RevisedSentence": revised_sentence})
 
 
     #bar.finish()
@@ -129,7 +129,7 @@ def main():
     #with open('correct_cases_dev_finetuned.json', 'w') as json_out: 
     #     json.dump(correct_cases, json_out)
 
-    with open("GPTandFinetuning.json", 'w') as json_out: 
+    with open("GPTandFinetuning100.json", 'w') as json_out: 
          json.dump(data_for_prediction_csv, json_out)
 
     #df = pd.DataFrame.from_dict(data_for_prediction_csv)

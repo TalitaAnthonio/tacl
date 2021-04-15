@@ -1,8 +1,8 @@
 import json 
 
-PATH_TO_RERANKED_FILE = "results-on-dev-set-finetuned-reranked.json"
+PATH_TO_RERANKED_FILE = "results-on-dev-set-reranked.json"
 #PATH_TO_RERANKED_FILE = "results-on-test-set-reranked-context-finetuned.json"
-MODEL_NAME = "GPT+Finetuning+S-perplexity"
+MODEL_NAME = "GPT+S-perplexity"
 
 
 with open(PATH_TO_RERANKED_FILE, 'r') as json_in: 
@@ -45,7 +45,7 @@ def main():
                 #correct_cases[key] = results_in_dict_format[key]
 
             total_correct += correct_or_not 
-            d[key] = {"{0}Pred".format(MODEL_NAME): top100_predictions[0].lstrip().lower(), "{0}Corr".format(MODEL_NAME): correct_or_not_value}
+            d[key] = {"{0}Pred".format(MODEL_NAME): top100_predictions[0:100], "{0}Corr".format(MODEL_NAME): correct_or_not_value}
             print(d[key])
     
     print(total_correct)
@@ -57,7 +57,7 @@ def main():
     #with open("correct_cases_dev_finetuned_context.json", "w") as json_out: 
     #    json.dump(correct_cases, json_out)
     
-    path_to_file_out = "{0}.json".format(MODEL_NAME)
+    path_to_file_out = "{0}100.json".format(MODEL_NAME)
 
     with open(path_to_file_out, "w") as json_out: 
          json.dump(d, json_out)
