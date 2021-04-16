@@ -29,7 +29,9 @@ def main():
     total_to_include_total = [] 
     number_of_nouns_total = []
 
+    data_for_coreference = {}
     for key, _ in data.items(): 
+
         total_to_include = 0 
         number_of_nouns = 0 
 
@@ -49,16 +51,21 @@ def main():
  
         tagged = add_pos_tagging_to_predictions(finetuned_only_model_predictions)
         # collect the fillers to include in a list 
-        fillers_to_include = []
+        fillers_to_include_plus_sentence = []
         for filler, post_tags_from_filler in zip(finetuned_only_model_predictions, tagged): 
             print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler))
             if filtering_patterns(post_tags_from_filler) == "include": 
                total_to_include +=1 
-               fillers_to_include.append(filler)
-            
-            
+
+
             if 'NN' in post_tags_from_filler or 'PRP' in post_tags_from_filler or 'PRP$' in post_tags_from_filler: 
                 number_of_nouns +=1 
+                fillers_to_include_plus_sentence.append(''.join([ data[key]['revised_untill_insertion'] + ' ' + filler + ' ' + data[key]['revised_after_insertion']]))
+
+
+        # add necessary elements for data for coreference 
+        data_for_coreference[key] = data[key]
+        data_for_coreference[key].update({"fillers_for_coref_plus_sent": fillers_to_include_plus_sentence})
 
 
         print("---------------------------------------------")
@@ -78,7 +85,10 @@ def main():
 
 
 
+    print("write to json for coreference parsing ... ")
 
+    with open("data_for_coreference.json", 'w') as json_out: 
+         json.dump(data_for_coreference, json_out)
 
 
 main()
