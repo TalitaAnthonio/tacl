@@ -26,7 +26,9 @@ def main():
     total_found_other_ranking = 0 
     index_errors = 0 
     counter = 0 
+    total_to_include_total = [] 
     for key, _ in data.items(): 
+        total_to_include = 0 
         best_model_pred = [elem.strip().lower() for elem in data[key]['GPT+Finetuning+P-perplexityPred']]
         second_best_model_pred = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
         context = data[key]['LeftContext']
@@ -51,14 +53,21 @@ def main():
         tagged = add_pos_tagging_to_predictions(second_best_model_pred)
 
         for filler, post_tags_from_filler in zip(second_best_model_pred, tagged): 
-            print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler)) 
+            print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler))
+            if filtering_patterns(post_tags_from_filler) == "include": 
+               total_to_include +=1 
 
 
         print("---------------------------------------------")
+        total_to_include_total.append(total_to_include) 
 
-        counter +=1 
-        if counter == 10: 
-            break 
+        counter +=1
+        
+    print("-------------------------------------------------")
+    print(np.mean(total_to_include_total))
+    print(np.sum(total_to_include_total))
+    print("total in data", counter)
+
 
 
         
