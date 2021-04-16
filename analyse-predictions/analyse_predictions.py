@@ -2,6 +2,7 @@ import json
 import pdb 
 from tools import * 
 import numpy as np 
+from filters import * 
 
 
 path_to_file = 'bestmodels_predictions.json'
@@ -50,7 +51,7 @@ def main():
         tagged = add_pos_tagging_to_predictions(second_best_model_pred)
 
         for filler, post_tags_from_filler in zip(second_best_model_pred, tagged): 
-            print(filler, post_tags_from_filler)
+            print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler)) 
 
 
         print("---------------------------------------------")
