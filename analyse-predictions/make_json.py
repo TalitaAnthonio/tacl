@@ -43,13 +43,17 @@ for key, _ in model1.items():
     
     merged_dict[key]['revised_after_insertion'] = revised_after_insertion
 
-    if 'index_of_reference' in other_info[key].keys(): 
-        merged_dict[key]['index_of_insertion'] = other_info[key]['index_of_reference']
+
+    if len(other_info[key]['insertion']) == 1: 
+       merged_dict[key]['index_of_reference'] = other_info[key]['index_of_reference'][0]
+    elif len(other_info[key]['insertion']) == 2: 
+       if type(other_info[key]['index_of_reference']) == list:
+           merged_dict[key]['index_of_reference'] = other_info[key]['index_of_reference'][0][0]
+       else: 
+           # when index of reference indicates the position of 
+           merged_dict[key]['index_of_reference'] = other_info[key]['index_of_insertion'][0][other_info[key]['index_of_reference']] 
     else: 
-        merged_dict[key]['index_of_insertion'] = other_info[key]['beginindex']
-
-    merged_dict[key]['reference-type'] = other_info[key]['reference-type']
-
+       merged_dict[key]['index_of_reference'] = other_info[key]['beginindex']
 
 with open('bestmodels_predictions.json', 'w') as json_out: 
      json.dump(merged_dict, json_out)
