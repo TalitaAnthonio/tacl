@@ -1,6 +1,6 @@
 import json 
 import pdb 
-from tools import check_if_filler_occurs, tokenize, add_pos_tagging
+from tools import * 
 import numpy as np 
 
 
@@ -24,11 +24,14 @@ def main():
     total_found = 0 
     total_found_other_ranking = 0 
     index_errors = 0 
+    counter = 0 
     for key, _ in data.items(): 
         best_model_pred = [elem.strip().lower() for elem in data[key]['GPT+Finetuning+P-perplexityPred']]
         second_best_model_pred = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
         context = data[key]['LeftContext']
         # check what the current position is 
+
+
         occurs_in_pred = check_pos_of_filler(best_model_pred, data[key]['CorrectReference'])
         total_found += occurs_in_pred
 
@@ -36,22 +39,25 @@ def main():
 
 
         # check if we can increase the position based on saliency 
-        context = tokenize(context, ngrams=data[key]['reference-type'])
+        #context = tokenize(context, ngrams=data[key]['reference-type'])
         d = check_if_filler_occurs(context, best_model_pred)
         sorted_d = dict(sorted(d.items(), key=lambda item: item[1], reverse=True))
         occurs_or_not = check_pos_of_filler(list(sorted_d.keys()), data[key]['CorrectReference'])
         total_found_other_ranking += occurs_or_not
         
         # do something with  POS TAGS --------------
-        
-        index = data[key]['index_of_insertion']
-        
-        if data[key]['reference-type'] == 'unigram': 
-            pdb.set_trace()
-            for prediction in second_best_model_pred: 
-                res = add_pos_tagging(data[key]['revised_untill_insertion'], prediction, data[key]['revised_after_insertion'])
-                print(prediction, res[index], res)
-        print('---------------------------------------------')
+ 
+        tagged = add_pos_tagging_to_predictions(second_best_model_pred)
+
+        for filler, post_tags_from_filler in zip(second_best_model_pred, tagged): 
+            print(filler, post_tags_from_filler)
+
+
+        print("---------------------------------------------")
+
+        counter +=1 
+        if counter == 10: 
+            break 
 
 
         

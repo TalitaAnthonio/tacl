@@ -1,6 +1,7 @@
 
 import spacy 
 from collections import Counter 
+import pdb 
 
 tokenizer = spacy.load('en_core_web_sm')
 
@@ -44,13 +45,25 @@ def tokenize(text_to_tokenize, ngrams='unigram'):
         return tokenized_by_ngram            
 
 
-def add_pos_tagging(before_reference, filler, after_reference): 
+def add_pos_tagging_from_sent(before_reference, filler, after_reference): 
     # add pos tags to the sentence + the reference
     # should return: the pos_tag of the filler 
 
     sent_to_tag = before_reference + ' ' + filler + ' ' +  after_reference 
     tagged = tokenizer(sent_to_tag)
     return [[token.text, token.tag_] for token in tagged]
+
+def add_pos_tagging_to_predictions(list_with_predictions): 
+    """
+        Returns the predictions [[filler, pos tag], but POS tagged]
+    """
+    tagged_filler_collection = []
+    for filler in list_with_predictions: 
+        tagged = tokenizer(filler)
+        tagged_filler = [token.tag_ for token in tagged]
+        tagged_filler_collection.append(tagged_filler)
+    return tagged_filler_collection
+
 
 
 
