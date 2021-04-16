@@ -27,8 +27,12 @@ def main():
     index_errors = 0 
     counter = 0 
     total_to_include_total = [] 
+    number_of_nouns_total = []
+    number_of_propn_total = []
     for key, _ in data.items(): 
         total_to_include = 0 
+        number_of_nouns = 0 
+        number_of_propn = 0 
         best_model_pred = [elem.strip().lower() for elem in data[key]['GPT+Finetuning+P-perplexityPred']]
         second_best_model_pred = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
         context = data[key]['LeftContext']
@@ -56,19 +60,24 @@ def main():
             print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler))
             if filtering_patterns(post_tags_from_filler) == "include": 
                total_to_include +=1 
+            
+            if 'NN' or 'PRP' or 'PRP$' in post_tags_from_filler: 
+                number_of_nouns +=1 
 
 
         print("---------------------------------------------")
         total_to_include_total.append(total_to_include) 
-
+        number_of_nouns_total.append(number_of_nouns)
         counter +=1
-        
-    print("-------------------------------------------------")
+
+    print("--------------number total ------------------------------")
     print(np.mean(total_to_include_total))
     print(np.sum(total_to_include_total))
     print("total in data", counter)
 
+    print("--------------number total ------------------------------")
 
+    print(np.mean(number_of_nouns_total))
 
         
 
