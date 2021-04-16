@@ -34,32 +34,29 @@ def main():
         number_of_nouns = 0 
 
         best_model_pred = [elem.strip().lower() for elem in data[key]['GPT+Finetuning+P-perplexityPred']]
-        second_best_model_pred = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
-        context = data[key]['LeftContext']
-        # check what the current position is 
-
-
-        occurs_in_pred = check_pos_of_filler(best_model_pred, data[key]['CorrectReference'])
-        total_found += occurs_in_pred
-
-        best_model_pred = second_best_model_pred
-
+        finetuned_only_model_predictions = [elem.strip() for elem in data[key]['GPT+FinetuningPred']]
 
         # check if we can increase the position based on saliency 
-        #context = tokenize(context, ngrams=data[key]['reference-type'])
-        d = check_if_filler_occurs(context, best_model_pred)
+
+        context = data[key]['LeftContext']
+        context = tokenize(context, ngrams=data[key]['reference-type'])
+        d = check_if_filler_occurs(context, finetuned_only_model_predictions)
         sorted_d = dict(sorted(d.items(), key=lambda item: item[1], reverse=True))
         occurs_or_not = check_pos_of_filler(list(sorted_d.keys()), data[key]['CorrectReference'])
         total_found_other_ranking += occurs_or_not
         
         # do something with  POS TAGS --------------
  
-        tagged = add_pos_tagging_to_predictions(second_best_model_pred)
-
-        for filler, post_tags_from_filler in zip(second_best_model_pred, tagged): 
+        tagged = add_pos_tagging_to_predictions(finetuned_only_model_predictions)
+        # collect the fillers to include in a list 
+        fillers_to_include = []
+        for filler, post_tags_from_filler in zip(finetuned_only_model_predictions, tagged): 
             print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler))
             if filtering_patterns(post_tags_from_filler) == "include": 
                total_to_include +=1 
+               fillers_to_include.append(filler)
+            
+            
             if 'NN' in post_tags_from_filler or 'PRP' in post_tags_from_filler or 'PRP$' in post_tags_from_filler: 
                 number_of_nouns +=1 
 
@@ -69,6 +66,7 @@ def main():
         number_of_nouns_total.append(number_of_nouns)
         counter +=1
 
+    # compute statistics 
     print("--------------number total ------------------------------")
     print(np.mean(total_to_include_total))
     print(np.sum(total_to_include_total))
