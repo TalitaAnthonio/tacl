@@ -8,3 +8,4 @@ data/
 language-modeling/finetuned-model
 *.csv
 *.textClipping
+analyse-predictions/run-coreference/stanford-corenlp-4.1.0
