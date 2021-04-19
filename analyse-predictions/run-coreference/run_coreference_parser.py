@@ -2,7 +2,7 @@
 # path_to_data = normal json file. 
 # example usage: 
 # python coreference_stanza.py --FileOut "../data/trigrams_part3.json" --CorefAlgorithm statistical --Port http://localhost:9001
-# python coreference_stanza.py --FileOut "./test.json" --CorefAlgorithm statistical --Port http://localhost:9002
+# python run_coreference_parser.py --FileOut "./test.json" --CorefAlgorithm statistical --Port http://localhost:9002
 
 
 import os
