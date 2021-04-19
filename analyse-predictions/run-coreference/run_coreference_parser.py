@@ -12,6 +12,7 @@ import nltk
 import argparse 
 from nltk.tokenize import sent_tokenize
 os.environ["CORENLP_HOME"] = "CoreNLPfiles"
+import pdb 
 from stanza.server import CoreNLPClient, TimeoutException
 
 
@@ -92,8 +93,7 @@ with open(path_to_data, "r") as json_in:
 
 
 def main(): 
-    with CoreNLPClient(annotators=['tokenize','ssplit','pos','parse', 'depparse','coref'], timeout=45000,  
-    properties={'annotators': 'coref', 'coref.algorithm' : coref_algorithm, 'ssplit.eolonly': True, 'maxCharLength': -1}, memory='4G', lang='en', endpoint=port_to_use, be_quiet=True) as client:
+    with CoreNLPClient(annotators=['tokenize','ssplit','pos','parse', 'depparse','coref'], timeout=45000, properties={'annotators': 'coref', 'coref.algorithm' : coref_algorithm, 'ssplit.eolonly': True, 'maxCharLength': -1}, memory='4G', lang='en', be_quiet=True) as client:
         print("annotate the text")
         print("use coref algorithm {0}".format(coref_algorithm))
 
@@ -111,11 +111,11 @@ def main():
                 context = dataset[key]["par"].rstrip('\n')
 
                 coreference_dict_for_fillers = {"id": key}
-                for fillerid, sentence_with_filler in enumerate(dataset[key]["fillers_for_coref_plus_sent"],1): 
-                    text = context + sentence_with_filler
-                    # check eerst hoe dit eruit ziet 
-                    pdb.set_trace()
 
+                for fillerid, sentence_with_filler in enumerate(dataset[key]["fillers_for_coref_plus_sent"],1): 
+                    print("Processing filler {0} our of {1}".format(str(fillerid), str(len(dataset[key]["fillers_for_coref_plus_sent"])))  )
+                    text = context + sentence_with_filler
+                    
                     try: 
                         ann = client.annotate(text)
                         results = EasyCoreNLP(ann)
@@ -124,7 +124,7 @@ def main():
                         print(E)
                         coreference_dict_for_filler = {"coref": "empty", "sents": "empty"}
                     
-                    coreference_dict_for_fillers[fillerid] = coreference_dict_for_filler
+                    coreference_dict_for_fillers["filler"+ str(fillerid)] = coreference_dict_for_filler
                     
                     # next checkpoint: check hoe de dict eruit ziet. 
                     # ----------------------------------------
