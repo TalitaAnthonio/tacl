@@ -40,22 +40,31 @@ def main():
         context = data[key]['LeftContext']
         context = tokenize(context, ngrams=data[key]['reference-type'])
 
+        tagged = add_pos_tagging_to_predictions(finetuned_only_model_predictions)
+        noun_fillers = []
+        other_fillers = []
+        for filler, post_tags_from_filler in zip(finetuned_only_model_predictions, tagged): 
+            if 'NN' in post_tags_from_filler or 'PRP' in post_tags_from_filler or 'PRP$' in post_tags_from_filler: 
+                noun_fillers.append(filler)
+            else: 
+                other_fillers.append(filler)
 
-        # dictionary with {"filler": how_often_it_occurs_in_the_context}
-        bow = check_if_filler_occurs(context, finetuned_only_model_predictions)
-        pdb.set_trace()
-
+        
+        bow_nouns = check_if_filler_occurs(context, noun_fillers)
         # sorted_d: sort the bow 
-        sorted_d = dict(sorted(bow.items(), key=lambda item: item[1], reverse=True))
+        sorted_d = dict(sorted(bow_nouns.items(), key=lambda item: item[1], reverse=True))
         
         # check if the correct filler is among them. 
         occurs_or_not = check_pos_of_filler(list(sorted_d.keys()), data[key]['CorrectReference'])
         total_found_other_ranking += occurs_or_not
+    
+    print(total_found_other_ranking)
 
 
         
+        
         # do something with  POS TAGS --------------
-        '''
+    '''
         tagged = add_pos_tagging_to_predictions(finetuned_only_model_predictions)
         # collect the fillers to include in a list 
         fillers_to_include_plus_sentence = []
