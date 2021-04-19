@@ -2,7 +2,7 @@
 # path_to_data = normal json file. 
 # example usage: 
 # python coreference_stanza.py --FileOut "../data/trigrams_part3.json" --CorefAlgorithm statistical --Port http://localhost:9001
-# python coreference_stanza.py --FileOut "../data/trigrams_coref_part2.json" --CorefAlgorithm statistical --Port http://localhost:9002
+# python coreference_stanza.py --FileOut "./test.json" --CorefAlgorithm statistical --Port http://localhost:9002
 
 
 import os
@@ -26,7 +26,7 @@ path_to_write_out = args['FileOut']
 port_to_use = args['Port']
 # ------------------- SET UP ARGPARSE ----------------------
 
-path_to_data =  "./trigrams_remaining_atomic_edits.json" 
+path_to_data =  "../data_for_coreference.json" 
 
 class EasyCoreNLP: 
     # client_annotate_text = client.annotate(text)
@@ -105,18 +105,32 @@ def main():
             for key, _ in dataset.items():
                 counter += 1
                 print("{0} out of {1}".format(counter, total))
+                
+
+                # --------------------------------------------
+                context = dataset[key]["par"].rstrip('\n')
+
+                coreference_dict_for_fillers = {"id": key}
+                for fillerid, sentence_with_filler in enumerate(dataset[key]["fillers_for_coref_plus_sent"],1): 
+                    text = context + sentence_with_filler
+                    # check eerst hoe dit eruit ziet 
+                    pdb.set_trace()
+
+                    try: 
+                        ann = client.annotate(text)
+                        results = EasyCoreNLP(ann)
+                        coreference_dict_for_filler= {"coref": results.coref_dict, "sents": results.sents}
+                    except Exception as E: 
+                        print(E)
+                        coreference_dict_for_filler = {"coref": "empty", "sents": "empty"}
                     
-                text = dataset[key]["par"].rstrip('\n') + dataset[key]["revised_sentence"]
+                    coreference_dict_for_fillers[fillerid] = coreference_dict_for_filler
+                    
+                    # next checkpoint: check hoe de dict eruit ziet. 
+                    # ----------------------------------------
 
-                try: 
-                    ann = client.annotate(text)
-                    results = EasyCoreNLP(ann)
-                    coreference_dict = {"coref": results.coref_dict, "sents": results.sents}
-                except Exception as E: 
-                    print(E)
-                    coreference_dict = {"coref": "empty", "sents": "empty"}
-                coreference_dict.update(dataset[key]) 
 
-                json_out.write(json.dumps(
-                    coreference_dict, default=str) + '\n')
+                json_out.write(json.dumps(coreference_dict_for_fillers, default=str) + '\n')
+
+
 main()
