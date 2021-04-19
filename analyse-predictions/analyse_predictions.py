@@ -31,7 +31,6 @@ def main():
 
     data_for_coreference = {}
     for key, _ in data.items(): 
-        pdb.set_trace()
 
         total_to_include = 0 
         number_of_nouns = 0 
@@ -61,8 +60,9 @@ def main():
 
             if 'NN' in post_tags_from_filler or 'PRP' in post_tags_from_filler or 'PRP$' in post_tags_from_filler: 
                 number_of_nouns +=1 
-                fillers_to_include_plus_sentence.append(''.join([ data[key]['revised_untill_insertion'] + ' ' + filler + ' ' + data[key]['revised_after_insertion']]))
-
+                sent_with_filler = ''.join([ data[key]['revised_untill_insertion'] + ' ' + filler + ' ' + data[key]['revised_after_insertion']])
+                fillers_to_include_plus_sentence.append(sent_with_filler)
+                print(sent_with_filler)
 
         # add necessary elements for data for coreference 
         data_for_coreference[key] = data[key]
@@ -81,6 +81,7 @@ def main():
     print("total in data", counter)
 
     print("--------------number total ------------------------------")
+    print(np.sum(number_of_nouns_total))
     print(np.mean(number_of_nouns_total))
     print(np.std(number_of_nouns_total))
 
