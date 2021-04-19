@@ -34,7 +34,7 @@ merged_dict = {}
 for key, _ in model1.items(): 
     merged_dict[key] = model1[key]
     merged_dict[key].update(model2[key])
-
+    
     merged_dict[key]['revised_untill_insertion'] = other_info[key]['revised_untill_insertion'] 
     try: 
         revised_after_insertion = other_info[key]['revised_afer_insertion']
@@ -43,6 +43,7 @@ for key, _ in model1.items():
     
     merged_dict[key]['revised_after_insertion'] = revised_after_insertion
     merged_dict[key]['reference-type'] = other_info[key]['reference-type']
+    merged_dict[key]['par'] = other_info[key]['par']
 
 
     if len(other_info[key]['insertion']) == 1: 
