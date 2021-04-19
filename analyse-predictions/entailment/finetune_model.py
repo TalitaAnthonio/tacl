@@ -5,6 +5,7 @@ import torch
 from torchtext.legacy.data import Field, TabularDataset, BucketIterator, Iterator
 import torch.nn as nn
 from transformers import BertTokenizer, BertForSequenceClassification
+import torch.optim as optim
 
 PATH_TO_TRAIN = 'train_news.csv'
 PATH_TO_VAL = 'val_news.csv'
