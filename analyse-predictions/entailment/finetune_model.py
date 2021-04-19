@@ -106,7 +106,7 @@ def train(model,
           valid_loader = var_iter,
           num_epochs = 5,
           eval_every = len(train_iter) // 2,
-          file_path = destination_folder,
+          file_path = './train-model',
           best_valid_loss = float("Inf")):
     
     # initialize running values
