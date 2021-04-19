@@ -6,3 +6,5 @@ data/
 *.pyc
 *.tsv
 language-modeling/finetuned-model
+*.csv
+*.textClipping
