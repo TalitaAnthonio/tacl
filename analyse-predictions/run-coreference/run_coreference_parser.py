@@ -11,7 +11,7 @@ import pickle
 import nltk 
 import argparse 
 from nltk.tokenize import sent_tokenize
-os.environ["CORENLP_HOME"] = "/mount/arbeitsdaten/emmy-noether-roth/mist/Talita/boardgames_scripts/wikihow/stats/stanford-corenlp-4.2.0"
+os.environ["CORENLP_HOME"] = "CoreNLPfiles"
 from stanza.server import CoreNLPClient, TimeoutException
 
 
