@@ -31,6 +31,7 @@ def main():
 
     data_for_coreference = {}
     for key, _ in data.items(): 
+        pdb.set_trace()
 
         total_to_include = 0 
         number_of_nouns = 0 
