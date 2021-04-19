@@ -24,7 +24,7 @@ label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=t
 # tokenizer.encode -> makes sure that we use the bert model for tokenization 
 text_field = Field(use_vocab=False, tokenize=tokenizer.encode, lower=False, include_lengths=False, batch_first=True,
                    fix_length=MAX_SEQ_LEN, pad_token=PAD_INDEX, unk_token=UNK_INDEX)
-fields = [('label', label_field), ('title', text_field), ('text', text_field)]
+fields = [('label', label_field), ('title', text_field), ('titletext', text_field), ('text', text_field)]
 
 train, valid, test = TabularDataset.splits(path='.', train=PATH_TO_TRAIN, validation=PATH_TO_VAL,
                                            test=PATH_TO_TEST, format='CSV', fields=fields, skip_header=True)
@@ -103,7 +103,7 @@ def train(model,
           optimizer,
           criterion = nn.BCELoss(),
           train_loader = train_iter,
-          valid_loader = valid_iter,
+          valid_loader = var_iter,
           num_epochs = 5,
           eval_every = len(train_iter) // 2,
           file_path = destination_folder,
