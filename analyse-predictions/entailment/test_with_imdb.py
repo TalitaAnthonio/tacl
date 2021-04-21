@@ -108,7 +108,7 @@ def main():
     model.train()
     optim = AdamW(model.parameters(), lr=5e-5)
     for epoch, _ in enumerate(range(3),1):
-        print("------- epoch {0}".format(epoch)
+        print("------- epoch {0}".format(epoch))
         
         train(model, optim, train_loader, device)
 
