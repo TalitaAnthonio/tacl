@@ -20,7 +20,6 @@ def read_imdb_split(split_dir):
         for text_file in (split_dir/label_dir).iterdir():
             texts.append(text_file.read_text())
             labels.append(0 if label_dir == "neg" else 1)
-
     return texts, labels
 
 
@@ -80,7 +79,7 @@ def train(model, optim, train_loader, device, num_epochs=3):
     return epoch_loss/len(train_loader), epoch_acc / len(train_loader)
     
 
-def evaluate(model, valid_loader): 
+def evaluate(model, valid_loader, device): 
 
     epoch_loss = 0 
     epoch_acc = 0 
@@ -146,7 +145,7 @@ def main():
     model.eval()
     for epoch, _ in enumerate(range(NUM_EPOCHS),1):
          print("------- epoch {0}".format(epoch))
-         evaluate(model, valid_loader)
+         evaluate(model, valid_loader, device)
 
 
 main()
