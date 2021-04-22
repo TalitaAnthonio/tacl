@@ -69,7 +69,6 @@ def train(model, optim, train_loader, device, num_epochs=3):
 
         # compute the accuracy 
         accuracy_score = compute_accuracy(labels, logits)
-        pdb.set_trace()
         epoch_acc += accuracy_score
 
         loss.backward()
