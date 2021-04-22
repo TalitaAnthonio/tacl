@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score
 from pathlib import Path
 import pdb
 
+NUM_EPOCHS = 3
 
 
 def read_imdb_split(split_dir):
@@ -77,6 +78,33 @@ def train(model, optim, train_loader, device, num_epochs=3):
     
     print("total loss {0} and accuracy {1}".format(epoch_loss/len(train_loader), epoch_acc/len(train_loader)  ))
     return epoch_loss/len(train_loader), epoch_acc / len(train_loader)
+    
+
+def evaluate(model, valid_loader): 
+
+    epoch_loss = 0 
+    epoch_acc = 0 
+
+    with torch.no_grad(): 
+
+        for batch in valid_loader: 
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['labels'].to(device)
+            outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
+            loss = outputs.loss
+            logits = outputs.logits 
+            
+            # add the loss to the item. 
+            epoch_loss += loss.item()
+
+            # compute the accuracy 
+            accuracy_score = compute_accuracy(labels, logits)
+            epoch_acc += accuracy_score
+            
+    print("total loss {0} and accuracy {1}".format(epoch_loss/len(train_loader), epoch_acc/len(train_loader)  ))
+    return epoch_loss/len(train_loader), epoch_acc / len(train_loader)
+
 
 
 def main(): 
@@ -102,17 +130,23 @@ def main():
 
     print("------------training --------------------------------------")
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+    valid_loader = DataLoader(val_dataset, batch_size = 16, schuffle=True)
     
     model.to(device)
     model.train()
     optim = AdamW(model.parameters(), lr=5e-5)
-    for epoch, _ in enumerate(range(3),1):
+    for epoch, _ in enumerate(range(NUM_EPOCHS),1):
         print("------- epoch {0}".format(epoch))
         
         train(model, optim, train_loader, device)
+    print("training is finished")
 
 
-    print("finished")
-    model.eval()
+    print("=============evaluating ========================================")
+    model.evaluate()
+    for epoch, _ in enumerate(range(NUM_EPOCHS),1):
+         print("------- epoch {0}".format(epoch))
+         evaluate(model, valid_loader)
+
 
 main()
