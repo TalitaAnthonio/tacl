@@ -31,11 +31,6 @@ def compute_accuracy(labels, logits):
 
     return accuracy
 
-    # accuracy_score 
-    # accuracy_score(y_true, ypredicted)
-
-
-
 # dict_keys(['input_ids', 'attention_mask', 'labels']) train_dataset[0]
 class IMDbDataset(torch.utils.data.Dataset):
     def __init__(self, encodings, labels):
@@ -128,7 +123,7 @@ def main():
 
     print("------------training --------------------------------------")
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-    valid_loader = DataLoader(val_dataset, batch_size = 16, schuffle=True)
+    valid_loader = DataLoader(val_dataset, batch_size = 16, shuffle=True)
     
     model.to(DEVICE)
     model.train()
