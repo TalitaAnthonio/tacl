@@ -10,7 +10,7 @@ from pathlib import Path
 import pdb
 
 NUM_EPOCHS = 3
-DEVICE = torch.DEVICE('cuda') if torch.cuda.is_available() else torch.DEVICE('cpu')
+DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def read_imdb_split(split_dir):
     """
