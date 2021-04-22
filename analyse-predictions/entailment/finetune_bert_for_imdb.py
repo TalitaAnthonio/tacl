@@ -10,7 +10,7 @@ from pathlib import Path
 import pdb
 
 NUM_EPOCHS = 3
-DEVICE = torch.DEVICE('cuda') if torch.cuda.is_available() else torch.DEVICE('cpu')
+DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def read_imdb_split(split_dir):
     split_dir = Path(split_dir)
@@ -96,8 +96,8 @@ def evaluate(model, valid_loader, DEVICE):
             accuracy_score = compute_accuracy(labels, logits)
             epoch_acc += accuracy_score
             
-    print("total loss {0} and accuracy {1}".format(epoch_loss/len(train_loader), epoch_acc/len(train_loader)  ))
-    return epoch_loss/len(train_loader), epoch_acc / len(train_loader)
+    print("total loss {0} and accuracy {1}".format(epoch_loss/len(valid_loader), epoch_acc/len(valid_loader)  ))
+    return epoch_loss/len(valid_loader), epoch_acc / len(valid_loader)
 
 
 
