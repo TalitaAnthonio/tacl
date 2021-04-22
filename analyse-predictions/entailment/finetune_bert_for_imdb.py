@@ -143,7 +143,7 @@ def main():
 
 
     print("=============evaluating ========================================")
-    model.evaluate()
+    model.eval()
     for epoch, _ in enumerate(range(NUM_EPOCHS),1):
          print("------- epoch {0}".format(epoch))
          evaluate(model, valid_loader)
