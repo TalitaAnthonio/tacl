@@ -10,7 +10,7 @@ from pathlib import Path
 import pdb
 
 NUM_EPOCHS = 3
-
+DEVICE = torch.DEVICE('cuda') if torch.cuda.is_available() else torch.DEVICE('cpu')
 
 def read_imdb_split(split_dir):
     split_dir = Path(split_dir)
@@ -52,14 +52,14 @@ class IMDbDataset(torch.utils.data.Dataset):
 
 
 # -------------- train model ----------------------------------
-def train(model, optim, train_loader, device, num_epochs=3): 
+def train(model, optim, train_loader, DEVICE, num_epochs=3): 
     epoch_loss = 0 
     epoch_acc = 0 
     for batch in train_loader:
         optim.zero_grad()
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['labels'].to(device)
+        input_ids = batch['input_ids'].to(DEVICE)
+        attention_mask = batch['attention_mask'].to(DEVICE)
+        labels = batch['labels'].to(DEVICE)
         outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
         loss = outputs.loss
         logits = outputs.logits 
@@ -79,7 +79,7 @@ def train(model, optim, train_loader, device, num_epochs=3):
     return epoch_loss/len(train_loader), epoch_acc / len(train_loader)
     
 
-def evaluate(model, valid_loader, device): 
+def evaluate(model, valid_loader, DEVICE): 
 
     epoch_loss = 0 
     epoch_acc = 0 
@@ -87,9 +87,9 @@ def evaluate(model, valid_loader, device):
     with torch.no_grad(): 
 
         for batch in valid_loader: 
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['labels'].to(device)
+            input_ids = batch['input_ids'].to(DEVICE)
+            attention_mask = batch['attention_mask'].to(DEVICE)
+            labels = batch['labels'].to(DEVICE)
             outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
             loss = outputs.loss
             logits = outputs.logits 
@@ -123,7 +123,6 @@ def main():
     train_dataset = IMDbDataset(train_encodings, train_labels)
     val_dataset = IMDbDataset(val_encodings, val_labels)
     test_dataset = IMDbDataset(test_encodings, test_labels)
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 
 
@@ -131,13 +130,13 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size = 16, schuffle=True)
     
-    model.to(device)
+    model.to(DEVICE)
     model.train()
     optim = AdamW(model.parameters(), lr=5e-5)
     for epoch, _ in enumerate(range(NUM_EPOCHS),1):
         print("------- epoch {0}".format(epoch))
         
-        train(model, optim, train_loader, device)
+        train(model, optim, train_loader, DEVICE)
     print("training is finished")
 
 
@@ -145,7 +144,7 @@ def main():
     model.eval()
     for epoch, _ in enumerate(range(NUM_EPOCHS),1):
          print("------- epoch {0}".format(epoch))
-         evaluate(model, valid_loader, device)
+         evaluate(model, valid_loader, DEVICE)
 
 
 main()
