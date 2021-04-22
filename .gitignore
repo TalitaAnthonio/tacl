@@ -13,3 +13,4 @@ analyse-predictions/entailment/context-dataset
 analyse-predictions/entailment/aclimdb
 analyse-predictions/entailment/logs
 *.tar.gz
+*.out
