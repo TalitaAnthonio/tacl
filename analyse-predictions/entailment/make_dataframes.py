@@ -28,6 +28,6 @@ def main():
         print(df_val)
         print(df_train)
         # om de data te converteren
-        print(df_test['semantic_rel'].tolist())
+        print(set(df_test['semantic_rel'].tolist()))
 
 main()
