@@ -66,7 +66,7 @@ def main():
 
         # add necessary elements for data for coreference 
         data_for_coreference[key] = data[key]
-        data_for_coreference[key].update({"fillers_for_coref_plus_sent": fillers_to_include_plus_sentence}, "fillers": fillers)
+        data_for_coreference[key].update({"fillers_for_coref_plus_sent": fillers_to_include_plus_sentence, "fillers": fillers})
 
 
         print("---------------------------------------------")
@@ -89,7 +89,7 @@ def main():
 
     print("write to json for coreference parsing ... ")
 
-    with open("data_for_coreference.json", 'w') as json_out: 
+    with open("data_for_coreference_new.json", 'w') as json_out: 
          json.dump(data_for_coreference, json_out)
 
 
