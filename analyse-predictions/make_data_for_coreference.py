@@ -50,6 +50,7 @@ def main():
         tagged = add_pos_tagging_to_predictions(finetuned_only_model_predictions)
         # collect the fillers to include in a list 
         fillers_to_include_plus_sentence = []
+        fillers = []
         for filler, post_tags_from_filler in zip(finetuned_only_model_predictions, tagged): 
             print(filler, post_tags_from_filler, filtering_patterns(post_tags_from_filler))
             if filtering_patterns(post_tags_from_filler) == "include": 
@@ -60,11 +61,12 @@ def main():
                 number_of_nouns +=1 
                 sent_with_filler = ''.join([ data[key]['revised_untill_insertion'] + ' ' + filler + ' ' + data[key]['revised_after_insertion']])
                 fillers_to_include_plus_sentence.append(sent_with_filler)
+                fillers.append(filler)
                 print(sent_with_filler)
 
         # add necessary elements for data for coreference 
         data_for_coreference[key] = data[key]
-        data_for_coreference[key].update({"fillers_for_coref_plus_sent": fillers_to_include_plus_sentence})
+        data_for_coreference[key].update({"fillers_for_coref_plus_sent": fillers_to_include_plus_sentence}, "fillers": fillers)
 
 
         print("---------------------------------------------")
