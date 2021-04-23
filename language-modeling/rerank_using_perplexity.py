@@ -71,13 +71,12 @@ def main():
             d[key] = results_in_dict_format[key]
             d[key].update({"generated_text_perplexity": reranked})
             print("======================================")
-            if counter == 10: 
-                break 
+ 
             
     bar.finish()
 
-    #with open(PATH_TO_FILE_OUT, 'w') as json_out: 
-    #        json.dump(d, json_out)
+    with open(PATH_TO_FILE_OUT, 'w') as json_out: 
+         json.dump(d, json_out)
 
 
 main()

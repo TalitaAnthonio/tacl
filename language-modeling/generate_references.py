@@ -148,7 +148,7 @@ def main():
 
     with open(path_to_file_out, "w") as json_out: 
         for revision_id, _ in single_insertions.items(): 
-            if  single_insertions[revision_id]['Split'] == 'DEV': 
+            if  single_insertions[revision_id]['Split'] == 'TEST': 
                 counter +=1 
                 insertion = single_insertions[revision_id]["insertion"]
                 print("running {0}".format(counter))
