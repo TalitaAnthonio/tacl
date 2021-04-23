@@ -28,7 +28,7 @@ def convert_labels(list_with_labels, binary=False):
     if binary: 
         for label in list_with_labels: 
             if label == 'equivalence': 
-            list_of_converted_labels.append(0)
+                list_of_converted_labels.append(0)
             elif label == 'alternation': 
                 list_of_converted_labels.append(1)
             elif label == 'other-related': 
