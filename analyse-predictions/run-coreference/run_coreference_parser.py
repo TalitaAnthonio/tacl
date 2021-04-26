@@ -2,7 +2,8 @@
 # path_to_data = normal json file. 
 # example usage: 
 # python coreference_stanza.py --FileOut "../data/trigrams_part3.json" --CorefAlgorithm statistical --Port http://localhost:9001
-# python run_coreference_parser.py --FileOut "./test.json" --CorefAlgorithm statistical --Port http://localhost:9002
+# python run_coreference_parser.py --FileOut "./new.json" --CorefAlgorithm statistical --Port http://localhost:9002
+# python run_coreference_parser.py --FileOut "./new.json" --CorefAlgorithm statistical --Port http://localhost:9002
 
 
 import os
@@ -27,7 +28,7 @@ path_to_write_out = args['FileOut']
 port_to_use = args['Port']
 # ------------------- SET UP ARGPARSE ----------------------
 
-path_to_data =  "../data_for_coreference.json" 
+path_to_data =  "../data_for_coreference_new.json" 
 
 class EasyCoreNLP: 
     # client_annotate_text = client.annotate(text)
@@ -112,10 +113,14 @@ def main():
 
                 coreference_dict_for_fillers = {"id": key}
 
-                for fillerid, sentence_with_filler in enumerate(dataset[key]["fillers_for_coref_plus_sent"],1): 
+                for fillerid, sentence_with_filler in enumerate(dataset[key]["fillers_for_coref_plus_sent"],0): 
+                    # TODO: add different name for the filler. 
+
                     print("Processing filler {0} our of {1}".format(str(fillerid), str(len(dataset[key]["fillers_for_coref_plus_sent"])))  )
                     text = context + sentence_with_filler
                     
+                    filler = dataset[key]["fillers"][fillerid]
+
                     try: 
                         ann = client.annotate(text)
                         results = EasyCoreNLP(ann)
