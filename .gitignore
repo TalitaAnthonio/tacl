@@ -14,3 +14,4 @@ analyse-predictions/entailment/aclimdb
 analyse-predictions/entailment/logs
 *.tar.gz
 *.out
+model
