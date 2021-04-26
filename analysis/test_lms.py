@@ -1,11 +1,15 @@
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 import torch
 import pdb 
-from transformers import BigBirdTokenizer, BigBirdForPreTraining, XLNetLMHeadModel, XLNetTokenizer
+import json 
 
-model_path='xlnet-base-cased'
-model =   XLNetLMHeadModel.from_pretrained(model_path, cache_dir="../../model")
-tokenizer = XLNetTokenizer.from_pretrained(model_path, cache_dir="../../model")
+from transformers import TransfoXLTokenizer, TransfoXLLMHeadModel
+
+tokenizer = TransfoXLTokenizer.from_pretrained('transfo-xl-wt103')
+model = TransfoXLLMHeadModel.from_pretrained('transfo-xl-wt103')
+
+#model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
+#tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
 
 
 #tokenizer = BigBirdTokenizer.from_pretrained('google/bigbird-roberta-base')
@@ -14,11 +18,53 @@ tokenizer = XLNetTokenizer.from_pretrained(model_path, cache_dir="../../model")
 #model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
 #tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
 
-inputs = tokenizer("The capital of France is ", return_tensors="pt")['input_ids']
+path_to_file = '../analyse-predictions/bestmodels_predictions.json'
 
-outputs = model.generate(inputs, max_length=inputs.size(1)+2, num_return_sequences=10, num_beams=10)
+with open(path_to_file, 'r') as json_in: 
+     data = json.load(json_in)
 
-print(outputs) 
-for output in outputs: 
-    encoded = tokenizer.decode(output)
-    print(encoded)
+
+PATH_TO_FILE_IN_RESULTS = "../data/references_for_lm.json"
+
+with open(PATH_TO_FILE_IN_RESULTS, 'r') as json_in: 
+     other_info = json.load(json_in)
+
+
+def generate_text(text, length): 
+
+    results = []
+    inputs = tokenizer(text, return_tensors="pt")['input_ids']
+    outputs = model.generate(inputs, max_length=inputs.size(1)+length, num_return_sequences=10, num_beams=10)
+
+    # this is the length in string length. 
+    prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
+    res = [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))]
+    return res  
+
+def count_matches(predictions, correct_ref):
+    predictions = [prediction.lower() for prediction in predictions]
+    if correct_ref.lower() in predictions:  
+       return 1 
+    else: 
+        return 0 
+
+
+def main(): 
+    
+    total_matches = 0 
+
+    counter = 0 
+    for key, _ in data.items(): 
+        counter +=1 
+        revised_untill_insertion = data[key]['revised_untill_insertion']
+        #text = data[key]['par'] + ' ' + revised_untill_insertion
+        text = other_info[key]["language_model_text"]
+        res = generate_text(text, len(other_info[key]['reference']))
+        print("============")
+        print(res)
+        print("correct reference", data[key]["CorrectReference"])
+        total_matches += count_matches(res, data[key]["CorrectReference"])
+        if counter == 20: 
+           break 
+
+main()
