@@ -3,7 +3,7 @@
 # example usage: 
 # python coreference_stanza.py --FileOut "../data/trigrams_part3.json" --CorefAlgorithm statistical --Port http://localhost:9001
 # python run_coreference_parser.py --FileOut "./new.json" --CorefAlgorithm statistical --Port http://localhost:9002
-# python run_coreference_parser.py --FileOut "./new.json" --CorefAlgorithm statistical --Port http://localhost:9002
+# python run_coreference_parser.py --FileOut "./new_with_filler_info.json" --CorefAlgorithm statistical --Port http://localhost:9002
 
 
 import os
@@ -124,7 +124,7 @@ def main():
                     try: 
                         ann = client.annotate(text)
                         results = EasyCoreNLP(ann)
-                        coreference_dict_for_filler= {"coref": results.coref_dict, "sents": results.sents}
+                        coreference_dict_for_filler= {"coref": results.coref_dict, "sents": results.sents, "filler": filler}
                     except Exception as E: 
                         print(E)
                         coreference_dict_for_filler = {"coref": "empty", "sents": "empty"}
