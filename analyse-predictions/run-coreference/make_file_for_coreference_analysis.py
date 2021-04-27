@@ -30,6 +30,7 @@ with open(coref_chain_info, 'r') as json_in:
      second_part = json.load(json_in)
 
 
+
 def main(): 
     d = {}
     counter = 0 
