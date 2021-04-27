@@ -2,7 +2,7 @@ import json
 import pdb 
 from pprint import pprint 
 
-path = "dev-set-coreferenced.json"
+path = "new.json"
 
 # 'filler1', 'filler2', 'filler3', 'filler4', 'filler5', 'filler6', 'filler7', 'filler8', 'filler9', 'filler10', 'filler11', 'filler12', 'filler13', 'filler14', 'filler15', 'filler16', 'filler17', 'filler18', 'filler19', 'filler20', 'filler21', 'filler22', 'filler23', 'filler24', 'filler25', 'filler26', 'filler27', 'filler28', 'filler29']
 
@@ -32,15 +32,14 @@ class DevelopmentInstance:
             print("============")
     
 
-
-
-
-
 def main(): 
     development_set_coreferenced = read_json_lines(path)
 
     for key, _ in development_set_coreferenced.items(): 
-        pprint(development_set_coreferenced[key].keys())
+        print(development_set_coreferenced[key]["filler1"].keys())
+        break
+
+        break 
         dev_object = DevelopmentInstance(development_set_coreferenced[key])
         print(dev_object.num_fillers)
         print(dev_object.id)
