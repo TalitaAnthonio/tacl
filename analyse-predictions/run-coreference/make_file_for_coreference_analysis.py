@@ -2,6 +2,7 @@ import json
 from collections import Counter
 import pdb 
 import pandas as pd 
+import numpy as np 
   
 def most_frequent(List):
     occurence_count = Counter(List)
@@ -40,27 +41,31 @@ with open(coref_chain_info, 'r') as json_in:
 
 
 
-def mark_instances(sents, coref_info): 
-    for sent in sents: 
-            print(sent)
-    
-
-
+def mark_instances(sents, coref_info, correct_reference): 
     marked_sents = {}
+    references = [' '.join(elem['ref']) for elem in coref_info]
+    max_sent_index = np.max([elem['sentenceIndex'] for elem in coref_info])
     for elem in coref_info: 
-        print(elem)
 
         sentence_with_coref = sents[elem["sentenceIndex"]]
-        print("sentence with coref", sentence_with_coref)
         begin_index = elem["beginIndex"]
         end_index = elem["endIndex"]
+ 
+        if (' '.join(elem["ref"]) == correct_reference) and (elem["sentenceIndex"] == max_sent_index): 
+            assert type(correct_reference) == str 
+            first_tag = "<MAIN_REF>"
+            second_tag = "</MAIN_REF>"
+        else: 
+            first_tag = "<REF>"
+            second_tag = "</REF>"
+
 
         if len(elem["ref"]) == 1: 
-            sentence_with_coref[begin_index] = "<REFERENCE>" + " " + sentence_with_coref[begin_index] + " " + "</REFERENCE>"
+            sentence_with_coref[begin_index] = first_tag + " " + sentence_with_coref[begin_index] + " " + second_tag
         
         else: 
-            sentence_with_coref[begin_index] = "<REFERENCE>" + " " +  sentence_with_coref[begin_index] 
-            sentence_with_coref[end_index-1] = sentence_with_coref[end_index-1] + " "+ "</REFERENCE>"
+            sentence_with_coref[begin_index] = first_tag + " " +  sentence_with_coref[begin_index] 
+            sentence_with_coref[end_index-1] = sentence_with_coref[end_index-1] + " "+ second_tag
 
         marked_sents[elem['sentenceIndex']] = sentence_with_coref
     
@@ -71,56 +76,82 @@ def mark_instances(sents, coref_info):
     
         new_sents.append(sent)
 
-    references =  [' '.join(elem['ref']) for elem in coref_info]
 
     
     return new_sents, references
 
 
+
 def main(): 
-    d = {"revised_sentence": [], "reference": [], "chain": [], "references": []}
+    d = {"last_sentence_in_context": [], "main_refferring_expression": [], "all_references_to_entity": [], "context": [], "revised_sentence": [], "id": []}
     counter = 0 
 
-    for key, _ in data.items():     
+    value_to_return = 0 
+    for key, _ in data.items():
         if "coref" not in data[key].keys(): 
             coref_info = second_part[key]["CorefChain"]
             sents = coref_info_unigrams[key]["sents"]
-            new_sents, references = mark_instances(sents, coref_info)
+            new_sents, references = mark_instances(sents, coref_info, " ".join(data[key]["reference"]))
+            new_sents_formatted = ' '.join(' '.join(sent) for sent in new_sents)
+
+            d["id"].append(key)
+            d["last_sentence_in_context"].append(' '.join(new_sents[-1]))
+            d["revised_sentence"].append(data[key]["revised_sentence"])
+            d["main_refferring_expression"].append(" ".join(data[key]["reference"]))
+            d["context"].append(new_sents_formatted)
+            d["all_references_to_entity"].append(references)
+
         else: 
             if len(data[key]["insertion"])  == 2: 
                 coref_info = coref_bigrams_info[key]["CorefChain"]
                 sents = data[key]["sents"]
-                new_sents, references = mark_instances(sents, coref_info)
+                references =  [' '.join(elem['ref']) for elem in coref_info]
 
-                print(data[key]["revised_sentence"])
-                print(data[key]["insertion"])
-                print("============================")
-                new_sents = [' '.join(sent) for sent in new_sents]
-                print(new_sents)
+                if " ".join(data[key]["reference"]) not in references: 
+                    #print("===========================================")
+                    #print(" ".join(data[key]["reference"]), references)
+                    for chain_id, _ in data[key]["coref"].items(): 
+                        i_references = [elem["ref"] for elem in data[key]["coref"][chain_id]["mentions"]]
+                        if data[key]["reference"] in i_references: 
+                            coref_info = data[key]["coref"][chain_id]["mentions"]
+                            break 
+                new_sents, references  = mark_instances(sents, coref_info, " ".join(data[key]["reference"]))
+                new_sents_formatted = ' '.join(' '.join(sent) for sent in new_sents)
 
-            
-               
-           
-            
+                d["id"].append(key)
+                d["last_sentence_in_context"].append(' '.join(new_sents[-1]))
+                d["revised_sentence"].append(data[key]["revised_sentence"])
+                d["main_refferring_expression"].append(" ".join(data[key]["reference"]))
+                d["context"].append(new_sents_formatted)
+                d["all_references_to_entity"].append(references)
+
+    
+                        
+                   
             else: 
                 coref_info = coref_trigrams_info[key]["CorefChain"]
                 sents = data[key]["sents"]
-                new_sents, references = mark_instances(sents, coref_info)
-                new_sents = [' '.join(sent) for sent in new_sents]
-                print(new_sents)
+                if type(data[key]["reference"]) == str: 
+                   reference = data[key]["reference"]
+                else: 
+                    reference = " ".join(data[key]["reference"])
+                new_sents, references = mark_instances(sents, coref_info, reference)
+                new_sents_formatted = ' '.join(' '.join(sent) for sent in new_sents)
 
-                print(data[key]["revised_sentence"])
-                print(data[key]["insertion"])
-                print("============================")
             
-
-        d["revised_sentence"].append(data[key]["revised_sentence"])
-        d["reference"].append(data[key]["reference"])
-        d["chain"].append(sents)
-        d["references"].append(references)
         
+                d["id"].append(key)
+                d["last_sentence_in_context"].append(' '.join(new_sents[-1]))
+                d["revised_sentence"].append(data[key]["revised_sentence"])
+                d["main_refferring_expression"].append(reference)
+                d["context"].append(new_sents_formatted)
+                d["all_references_to_entity"].append(references)
     
+    del d["revised_sentence"]
     df = pd.DataFrame.from_dict(d)
-    df.to_csv("test.tsv", sep="\t")
+    df = df.sample(n=100)
+    df.to_csv("test2.tsv", sep="\t", index=False)
+
 
 main()
+
