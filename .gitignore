@@ -16,3 +16,4 @@ analyse-predictions/entailment/logs
 *.out
 model
 .ipynb_checkpoints
+*.pickle
