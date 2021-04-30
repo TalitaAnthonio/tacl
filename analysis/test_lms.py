@@ -2,11 +2,11 @@ from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
 import torch
 import pdb 
 import json 
-
-from transformers import TransfoXLTokenizer, TransfoXLLMHeadModel
-
-tokenizer = TransfoXLTokenizer.from_pretrained('transfo-xl-wt103')
-model = TransfoXLLMHeadModel.from_pretrained('transfo-xl-wt103')
+from transformers import BertGenerationTokenizer, BertGenerationDecoder, BertGenerationConfig
+tokenizer = BertGenerationTokenizer.from_pretrained('google/bert_for_seq_generation_L-24_bbc_encoder')
+config = BertGenerationConfig.from_pretrained("google/bert_for_seq_generation_L-24_bbc_encoder")
+config.is_decoder = True
+model = BertGenerationDecoder.from_pretrained('google/bert_for_seq_generation_L-24_bbc_encoder', config=config)
 
 #model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
 #tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
@@ -34,7 +34,7 @@ def generate_text(text, length):
 
     results = []
     inputs = tokenizer(text, return_tensors="pt")['input_ids']
-    outputs = model.generate(inputs, max_length=inputs.size(1)+length, num_return_sequences=10, num_beams=10)
+    outputs = model.generate(inputs, max_length=inputs.size(1)+length, num_return_sequences=50, num_beams=50)
 
     # this is the length in string length. 
     prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))

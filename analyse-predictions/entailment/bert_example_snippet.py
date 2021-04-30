@@ -14,6 +14,5 @@ print(loss.item())
 logits = outputs.logits
 print(logits)
 print(labels)
-pdb.set_trace()
 pred = logits.max(1).indices
 print(pred)
