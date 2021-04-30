@@ -3,6 +3,7 @@ from collections import Counter
 import pdb 
 import pandas as pd 
 import numpy as np 
+import pickle 
 
 np.random.seed(1)
   
@@ -86,6 +87,9 @@ def mark_instances(sents, coref_info, correct_reference):
 
 
 def main(): 
+    # add dict for the cases that were wrong 
+    dict_with_correct_references = {}
+
     d = {"last_sentence_in_context": [], "main_refferring_expression": [], "all_references_to_entity": [], "context": [], "revised_sentence": [], "id": [], "original_sentence": []}
     counter = 0 
     
@@ -120,6 +124,7 @@ def main():
                         i_references = [elem["ref"] for elem in dev_set[key]["coref"][chain_id]["mentions"]]
                         if dev_set[key]["reference"] in i_references: 
                             coref_info = dev_set[key]["coref"][chain_id]["mentions"]
+                            dict_with_correct_references[key] = coref_info
                             break 
                 new_sents, references  = mark_instances(sents, coref_info, " ".join(dev_set[key]["reference"]))
                 new_sents_formatted = ' '.join(' '.join(sent)+'\n' for sent in new_sents)
@@ -154,11 +159,10 @@ def main():
                 d["all_references_to_entity"].append(references)
     
     #del d["revised_sentence"]
-    df = pd.DataFrame.from_dict(d)
-    df = df.sample(n=200)
-    print(df)
-    df.to_csv("dev_split.tsv", sep="\t", index=False)
-
+    #df = pd.DataFrame.from_dict(d)
+    #df = df.sample(n=200)
+    #print(df)
+    #df.to_csv("dev_split.tsv", sep="\t", index=False)
 
 main()
 

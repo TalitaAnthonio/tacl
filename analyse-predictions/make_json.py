@@ -44,6 +44,7 @@ for key, _ in model1.items():
     merged_dict[key]['revised_after_insertion'] = revised_after_insertion
     merged_dict[key]['reference-type'] = other_info[key]['reference-type']
     merged_dict[key]['par'] = other_info[key]['par']
+    merged_dict[key]['language_model_text'] = other_info[key]["language_model_text"]
 
 
     if len(other_info[key]['insertion']) == 1: 
