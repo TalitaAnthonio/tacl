@@ -52,10 +52,10 @@ def main():
         # truncate text in case longer than 512 tokens. 
         context_plus_revised_sentence = trunc_text(context_plus_revised_sentence)
 
-        if data[key]['Split'] == 'TRAIN': 
+        if data[key]['Split'] == 'DEV': 
             train[key] = context_plus_revised_sentence
 
     
-    with open("contextplusrevisedtrain.json", "w") as json_out: 
+    with open("contextplusreviseddev.json", "w") as json_out: 
          json.dump(train, json_out)
 main()

@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 
 
 USE_DEV = False
+USE_DEV_WITH_FULL_CONTEXT = True 
 
 stop_words_list = list(set(stopwords.words('english'))) 
 
@@ -36,6 +37,10 @@ def check_pos_of_filler(predictions, correct_filler, topk=10):
        return 1 
     else: 
         return 0 
+
+# use if you want to use the full development set text 
+with open("contextplusreviseddev.json", 'r') as json_in: 
+     development_set_context = json.load(json_in)
 
 
 def tokenize(text_to_tokenize): 
@@ -77,13 +82,18 @@ class TfIdf:
         return bow_in_dict_format
 
 
-def vectorize_data(use_dev=USE_DEV): 
+def vectorize_data(use_dev=USE_DEV, use_with_full_revised_sentence = USE_DEV_WITH_FULL_CONTEXT): 
     """ 
         Used to vectorize the documents again 
     """
 
-    dev_documents = [development_set[key]["language_model_text"] for key, _ in development_set.items()]
+    if use_with_full_revised_sentence: 
+        dev_documents = [value for key, value in development_set_context.items()]
+    else: 
+        dev_documents = [development_set[key]["language_model_text"] for key, _ in development_set.items()]
+ 
     if not use_dev: 
+       print("use development and train .... ")
        train_documents = [value for key, value in train.items()]
        dev_documents = dev_documents + train_documents
     
@@ -149,8 +159,8 @@ class BowForContext:
     def top_instances(self): 
         tf_idf_values_from_context = {token: self.bow[token] for token in self.tokenized_context if token in self.bow.keys()} 
         sorted_values = sorted(tf_idf_values_from_context.items(), key=lambda x: x[1], reverse=True)
-        print(sorted_values)
-        top_words = [token_freq[0] for token_freq in sorted_values][0:10]
+        top_words = [token_freq[0] for token_freq in sorted_values if token_freq[1] > 0.0][0:10]
+        print(top_words)
         return top_words
 
 
@@ -165,9 +175,9 @@ def check_pos_of_filler(predictions, correct_filler, topk=10):
 def main(): 
 
     # dict_keys(['GPT+Finetuning+P-perplexityPred', 'GPT+Finetuning+P-perplexityCorr', 'GPT+FinetuningCorrect', 'CorrectReference', 'LeftContext', 'GPTPred', 'GPTCorrect', 'key', 'GPT+FinetuningPred', 'RevisedSentence', 'revised_untill_insertion', 'revised_after_insertion', 'reference-type', 'par', 'index_of_reference'])
-    vectorize_data()
+    #vectorize_data()
     
-    """
+
     total_correct = 0 
 
     counter = 0 
@@ -191,5 +201,4 @@ def main():
 
     print(total_correct)
     
-    """
 main()
