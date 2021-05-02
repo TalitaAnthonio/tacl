@@ -6,6 +6,9 @@ import spacy
 import pickle 
 from nltk.corpus import stopwords
 
+
+USE_DEV = False
+
 stop_words_list = list(set(stopwords.words('english'))) 
 
 punctuation = [",", ".", "!", "*", "?", "#"]
@@ -13,10 +16,14 @@ punctuation = [",", ".", "!", "*", "?", "#"]
 spacy_model = spacy.load('en_core_web_sm')
 
 
-
 path_to_file_with_corefs = "../analyse-predictions/run-coreference/most_frequent_reference_baseline.json"
 
 path_to_file_with_predictions = '../analyse-predictions/bestmodels_predictions.json'
+
+path_to_train = "contextplusrevisedtrain.json"
+
+with open(path_to_train, "r") as json_in: 
+     train = json.load(json_in)
 
 with open(path_to_file_with_predictions, 'r') as json_in: 
      development_set = json.load(json_in)
@@ -70,12 +77,15 @@ class TfIdf:
         return bow_in_dict_format
 
 
-def vectorize_data(): 
+def vectorize_data(use_dev=USE_DEV): 
     """ 
         Used to vectorize the documents again 
     """
 
     dev_documents = [development_set[key]["language_model_text"] for key, _ in development_set.items()]
+    if not use_dev: 
+       train_documents = [value for key, value in train.items()]
+       dev_documents = dev_documents + train_documents
     
     print("Make bow for unigrams ..... ")
     bow_unigrams = TfIdf(dev_documents, ngram_value=(1,1), stop_words_value=["the", "a", "to", "and", "or", "of", "and", "in", "if", "on", "can", "be"]).vectorize()
@@ -155,8 +165,9 @@ def check_pos_of_filler(predictions, correct_filler, topk=10):
 def main(): 
 
     # dict_keys(['GPT+Finetuning+P-perplexityPred', 'GPT+Finetuning+P-perplexityCorr', 'GPT+FinetuningCorrect', 'CorrectReference', 'LeftContext', 'GPTPred', 'GPTCorrect', 'key', 'GPT+FinetuningPred', 'RevisedSentence', 'revised_untill_insertion', 'revised_after_insertion', 'reference-type', 'par', 'index_of_reference'])
-    #vectorize_data()
+    vectorize_data()
     
+    """
     total_correct = 0 
 
     counter = 0 
@@ -180,5 +191,5 @@ def main():
 
     print(total_correct)
     
-
+    """
 main()
