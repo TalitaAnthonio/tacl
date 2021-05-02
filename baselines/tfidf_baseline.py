@@ -15,6 +15,7 @@ spacy_model = spacy.load('en_core_web_sm')
 
 
 path_to_file_with_corefs = "../analyse-predictions/run-coreference/most_frequent_reference_baseline.json"
+
 path_to_file_with_predictions = '../analyse-predictions/bestmodels_predictions.json'
 
 with open(path_to_file_with_predictions, 'r') as json_in: 
@@ -32,7 +33,13 @@ def check_pos_of_filler(predictions, correct_filler, topk=10):
 
 def tokenize(text_to_tokenize): 
     tokenized_text = spacy_model(text_to_tokenize)
-    return [token.text.lower() for token in tokenized_text]
+    tokens_to_exclude = [",", ".", "!", "*", "?", "#", ":"]
+
+    tokenized = []
+    for token in tokenized_text: 
+        if token.text not in tokens_to_exclude: 
+            tokenized.append(token.text.lower())
+    return tokenized
 
 
 
@@ -49,8 +56,8 @@ with open("bow_unigrams.pickle", "rb") as pickle_in:
 
 class TfIdf: 
 
-    def __init__(self, data, ngram_value=(2,2)):
-        self.vectorizer = TfidfVectorizer(ngram_range=ngram_value, tokenizer=tokenize, lowercase=True)
+    def __init__(self, data, ngram_value=(2,2), stop_words_value=None):
+        self.vectorizer = TfidfVectorizer(ngram_range=ngram_value, tokenizer=tokenize, lowercase=True, use_idf=True, stop_words=stop_words_value)
         self.data = data 
         self.ngram_value = ngram_value 
     
@@ -71,7 +78,7 @@ def vectorize_data():
     dev_documents = [development_set[key]["language_model_text"] for key, _ in development_set.items()]
     
     print("Make bow for unigrams ..... ")
-    bow_unigrams = TfIdf(dev_documents, ngram_value=(1,1)).vectorize()
+    bow_unigrams = TfIdf(dev_documents, ngram_value=(1,1), stop_words_value=["the", "a", "to", "and", "or", "of", "and", "in", "if", "on", "can", "be"]).vectorize()
     print(bow_unigrams)
 
     print("save to file ... ")
@@ -150,7 +157,6 @@ def main():
     # dict_keys(['GPT+Finetuning+P-perplexityPred', 'GPT+Finetuning+P-perplexityCorr', 'GPT+FinetuningCorrect', 'CorrectReference', 'LeftContext', 'GPTPred', 'GPTCorrect', 'key', 'GPT+FinetuningPred', 'RevisedSentence', 'revised_untill_insertion', 'revised_after_insertion', 'reference-type', 'par', 'index_of_reference'])
     #vectorize_data()
     
-    
     total_correct = 0 
 
     counter = 0 
@@ -174,4 +180,5 @@ def main():
 
     print(total_correct)
     
+
 main()
