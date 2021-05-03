@@ -125,6 +125,8 @@ def main():
                     closest_referring_expression_in_the_previous_sentence = sorted(reference_index_list[sentence_indexes[1]]["reference"], key=lambda x:x[-1], reverse=True)[0]
                     sentence_length_of_previous_sentence = reference_index_list[sentence_indexes[1]]["sentlength"]
                     print("the closest referring expression in the previous sentence", closest_referring_expression_in_the_previous_sentence)
+                    
+                    # ---------------------------------------- if the position of the reference is 0 ----------------------------------------------------------
                     if position_of_correct_reference == 0: 
                        next_referring_expression_in_revised_sentence = sorted(reference_index_list[sentence_indexes[0]]["reference"], key=lambda x:x[-1], reverse=True)[1]
                        absolute_distance_between_ref_in_same = abs(correct_reference_index_pair[-1] - next_referring_expression_in_revised_sentence[-1])
@@ -142,6 +144,27 @@ def main():
                           print("closest reference", closest_referring_expression_in_the_previous_sentence)
                        else: 
                           print("closest reference", next_referring_expression_in_revised_sentence)
+                    
+                    # ---------------------------------------- if the position of the reference is at the end, just take the previous one ----------------------------------------------------------
+                    elif position_of_correct_reference == len(referring_expressions_in_revised_pairs)-1: 
+                        print("position of correct reference", position_of_correct_reference)
+                        print("closest reference", referring_expressions_in_revised_pairs[position_of_correct_reference-1])
+                    
+                    # if the reference is in the middle, take the left and rightmost 
+                    else: 
+                        left_most_expression = referring_expressions_in_revised_pairs[position_of_correct_reference-1]
+                        right_most_expression = referring_expressions_in_revised_pairs[position_of_correct_reference+1]
+                        print("leftmost", left_most_expression)
+                        print("rightmost", right_most_expression)
+                        print("correct reference", correct_reference_index_pair)
+
+                        distance_to_left = abs(correct_reference_index_pair[-1] - left_most_expression[-1])
+                        distance_to_right = abs(correct_reference_index_pair[-1] - right_most_expression[-1])
+                        if distance_to_left > distance_to_right: 
+                           print("closest reference", distance_to_right, right_most_expression)
+                        else: 
+                           print("closest reference", distance_to_left, left_most_expression)
+
             # de lengte is 1 
             # de lengte is langer dan 1 
         except ValueError: 
