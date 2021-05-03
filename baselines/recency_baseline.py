@@ -61,10 +61,13 @@ def get_ref_per_sent(coref_info):
 
 
             if sentence_index not in reference_index_list.keys(): 
-                reference_index_list[sentence_index] = []
-                reference_index_list[sentence_index].append([reference, begin_index])
+                reference_index_list[sentence_index] = {}
+                reference_index_list[sentence_index]["reference"] = []
+                reference_index_list[sentence_index]["reference"].append([reference, begin_index])
+                reference_index_list[sentence_index]["sentlength"] = len(sent)
             else: 
-                reference_index_list[sentence_index].append([reference, begin_index])
+                reference_index_list[sentence_index]["reference"].append([reference, begin_index])
+                reference_index_list[sentence_index]["sentlength"] = len(sent)
     return reference_index_list
 
 
@@ -83,10 +86,10 @@ def main():
         
         # just used for printing 
         for sentence_index in sentence_indexes:
-            sorted_references = sorted(reference_index_list[sentence_index], key=lambda x:x[-1], reverse=True) 
+            sorted_references = sorted(reference_index_list[sentence_index]["reference"], key=lambda x:x[-1], reverse=True) 
             indexes = [elem[-1] for elem in sorted_references]
 
-            print(sentence_index, sorted_references)
+            print(sentence_index, sorted_references, "sentence length", reference_index_list[sentence_index]["sentlength"])
         
         # just used for printing 
         
@@ -101,7 +104,7 @@ def main():
         correct_reference_index_pair = [correct_reference.split(), index_of_reference]
 
         # print all the referring expressions of the revised sentence. 
-        referring_expressions_in_revised_pairs = sorted(reference_index_list[sentence_indexes[0]], key=lambda x:x[-1], reverse=True)
+        referring_expressions_in_revised_pairs = sorted(reference_index_list[sentence_indexes[0]]["reference"], key=lambda x:x[-1], reverse=True)
         try: 
             position_of_correct_reference = referring_expressions_in_revised_pairs.index(correct_reference_index_pair)
             print("nr of references in revised", len(referring_expressions_in_revised_pairs))
@@ -109,7 +112,7 @@ def main():
 
             # if there is just one refererring expression in the revised sentence (which should be the human-inserted one), take the closest referring expression of the previous sentence. 
             if len(referring_expressions_in_revised_pairs) == 1: 
-               referring_expressions_in_previous_sentence = sorted(reference_index_list[sentence_indexes[1]], key=lambda x:x[-1], reverse=True)[0][0]
+               referring_expressions_in_previous_sentence = sorted(reference_index_list[sentence_indexes[1]]["reference"], key=lambda x:x[-1], reverse=True)[0][0]
                print("The nearest reference is", referring_expressions_in_previous_sentence)
             else: 
                # check the cataphors with one sentence 
@@ -119,12 +122,15 @@ def main():
                
                else: 
                     # check the closest referring expression in the previous sentence 
-                    closest_referring_expression_in_the_previous_sentence = sorted(reference_index_list[sentence_indexes[1]], key=lambda x:x[-1], reverse=True)[0]
+                    closest_referring_expression_in_the_previous_sentence = sorted(reference_index_list[sentence_indexes[1]]["reference"], key=lambda x:x[-1], reverse=True)[0]
+                    sentence_length_of_previous_sentence = reference_index_list[sentence_indexes[1]]["sentlength"]
                     print("the closest referring expression in the previous sentence", closest_referring_expression_in_the_previous_sentence)
                     if position_of_correct_reference == 0: 
-                       next_referring_expression_in_revised_sentence = sorted(reference_index_list[sentence_indexes[0]], key=lambda x:x[-1], reverse=True)[1]
+                       next_referring_expression_in_revised_sentence = sorted(reference_index_list[sentence_indexes[0]]["reference"], key=lambda x:x[-1], reverse=True)[1]
                        absolute_distance_between_ref_in_same = abs(correct_reference_index_pair[-1] - next_referring_expression_in_revised_sentence[-1])
-                       absolute_distance_between_ref_in_prev = abs(correct_reference_index_pair[-1] - closest_referring_expression_in_the_previous_sentence[-1])
+
+                       absolute_distance_between_ref_in_prev = abs(abs(sentence_length_of_previous_sentence - closest_referring_expression_in_the_previous_sentence[-1]) + (correct_reference_index_pair[-1])) 
+                       
                        print(absolute_distance_between_ref_in_same, "same sent")
                        print(absolute_distance_between_ref_in_prev, "prev sent")
 
