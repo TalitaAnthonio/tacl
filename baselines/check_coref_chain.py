@@ -70,21 +70,15 @@ for key in all_data_keys:
     if key not in corrected_references.keys(): 
         indexes = [mention["beginIndex"] for mention in coref_data[key]["CorefChain"]]
         sent_refs = get_ref_per_sent(coref_data[key]["CorefChain"])
-        if len(sent_refs.keys()) == 1: 
-            try: 
-                if coref_data[key]["index_of_reference"] in indexes: 
-                    if indexes.index(coref_data[key]["index_of_reference"]) == len(indexes)-1:
-                        continue
-            except KeyError: 
-     
-                for sentnr, _ in sent_refs.items(): 
-                    #sent_refs = sorted(sent_refs[sentnr], key=lambda x:x[-1], reverse=True) 
-                    references_blabla = [" ".join(elem[0]) for elem in sorted(sent_refs[sentnr], key=lambda x:x[-1], reverse=True)]
-                    if references_blabla.index(" ".join(coref_data[key]["reference"])) == len(indexes)-1: 
-                       print("correct reference", coref_data[key]["reference"])
-                       print(sent_refs)
-                       print(key)
-                       print("============================")
-                       counter +=1 
+        if len(sent_refs.keys()) == 1:  
+            
+            sorted_references = sorted(sent_refs[list(sent_refs.keys())[0]], key=lambda x:x[-1]) 
+            indexes = [elem[-1] for elem in sorted_references]
+            references = [elem[0] for elem in sorted_references]
+            if coref_data[key]["index_of_reference"] in indexes: 
+                if (indexes.index(coref_data[key]["index_of_reference"]) == len(indexes)-1) and coref_data[key]['reference'] in references:
+                    print(sorted_references)
+                    print(coref_data[key]['reference'])
+         
             
 print(counter)

@@ -96,7 +96,6 @@ def main():
     dev_set = dict((key,value) for key, value in data.items() if data[key]["Split"] == "DEV")    
     value_to_return = 0 
     for key, _ in dev_set.items():
-        pdb.set_trace()
       
         if "coref" not in dev_set[key].keys(): 
             coref_info = second_part[key]["CorefChain"]
@@ -164,5 +163,8 @@ def main():
     #print(df)
     #df.to_csv("dev_split.tsv", sep="\t", index=False)
 
+    with open("dict_with_correct_references.json", "w") as json_out: 
+         json.dump(dict_with_correct_references, json_out)
+         
 main()
 
