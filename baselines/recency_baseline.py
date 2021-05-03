@@ -58,13 +58,14 @@ def get_ref_per_sent(coref_info):
             sentence_index = mention["sentenceIndex"]
             begin_index = mention["beginIndex"]
             reference = mention["ref"]
-            reference_info = [reference, begin_index, sentence_index]
+            sent = mention["tokenized_sent"]
+
 
             if sentence_index not in reference_index_list.keys(): 
                 reference_index_list[sentence_index] = []
-                reference_index_list[sentence_index].append([reference, begin_index])
+                reference_index_list[sentence_index].append([reference, begin_index, sent])
             else: 
-                reference_index_list[sentence_index].append([reference, begin_index])
+                reference_index_list[sentence_index].append([reference, begin_index, sent])
     return reference_index_list
 
 
@@ -79,20 +80,20 @@ def main():
 
 
         sentence_indexes = sorted(reference_index_list.keys()) 
-        if len(sentence_indexes) == 1: 
-            counter +=1 
-            print("correct reference ", data[key]["CorrectReference"])
-            for sentence_index in sentence_indexes:
-                sorted_references = sorted(reference_index_list[sentence_index], key=lambda x:x[-1], reverse=True) 
-                print(sentence_index, sorted_references)
-                references_per_sentence = [" ".join(elem[0]) for elem in sorted_references]
-                
-                indexes = [elem[1] for elem in sorted_references]
-                if data[key]["index_of_reference"] in indexes: 
-                   if indexes.index(data[key]["index_of_reference"]) == len(indexes)-1: 
-                      print("cataphoric?")
-                
+        sentence_indexes.reverse()
+        print(sentence_indexes)
+     
+        for sentence_index in sentence_indexes:
+            sorted_references = sorted(reference_index_list[sentence_index], key=lambda x:x[-2], reverse=True) 
 
+            print(sentence_index, sorted_references)
+            references_per_sentence = [" ".join(elem[0]) for elem in sorted_references]
+            indexes = [elem[1] for elem in sorted_references]
+
+            if data[key]["CorrectReference"] in references_per_sentence: 
+               print(references_per_sentence, "in data", data[key]["CorrectReference"])
+               break 
            
-    print(counter)
+        print("======================")
+        break 
 main()
