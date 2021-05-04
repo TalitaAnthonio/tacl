@@ -15,6 +15,7 @@ with open("../data/references_for_lm.json", "r") as json_in:
      more_info = json.load(json_in)
 
 
+
 def check_matches(correct_reference, predictions): 
     if correct_reference.lower() in predictions: 
        return 1 
@@ -42,7 +43,7 @@ def main():
 
             # take the top 1 (here: human-inserted) and the second best one. 
             fifty_instances_with_human_inserted[key] = {"Answer1": predictions[0], "Answer2": predictions[1], "OtherInfo": "human-inserted", "CorrectRef": other_info[key]["CorrectReference"] }
-            fifty_instances_with_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion} )
+            fifty_instances_with_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion, "filename": more_info[key]["filename"]} )
 
         else: 
             # TODO: check the position of the correct answer. 
@@ -51,8 +52,8 @@ def main():
             occurs_in_top_10 = check_matches(other_info[key]["CorrectReference"], predictions[0:10])
             if occurs_in_top_10 == 1: 
                 
-                fifty_instances_without_human_inserted[key] = {"Answer 1": predictions[0], "Answer2": predictions[1], "OtherInfo": "not-human-inserted"}
-                fifty_instances_without_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion} )
+                fifty_instances_without_human_inserted[key] = {"Answer1": predictions[0], "Answer2": predictions[1], "OtherInfo": "not-human-inserted"}
+                fifty_instances_without_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion, "filename": more_info[key]["filename"]} )
 
    
     print(len(fifty_instances_with_human_inserted.keys()))
@@ -60,7 +61,7 @@ def main():
 
 
     with open("with_human_inserted.json", "w") as json_out: 
-         json.dump(fifty_instances_with_human_inserted, json_out)
+         json.dump(fifty_instances_without_human_inserted, json_out)
     
     with open("without_human_inserted.json", "w") as json_out: 
          json.dump(fifty_instances_with_human_inserted, json_out)
