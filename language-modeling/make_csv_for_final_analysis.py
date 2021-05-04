@@ -11,6 +11,8 @@ with open("GPT+P-perplexitytop100.json", "r") as json_in:
      data = json.load(json_in)
 
 
+with open("../data/references_for_lm.json", "r") as json_in: 
+     more_info = json.load(json_in)
 
 
 def check_matches(correct_reference, predictions): 
@@ -30,11 +32,18 @@ def main():
     for key, _ in data.items():
         predictions = [prediction.strip() for prediction in data[key]["GPT+P-perplexityPred"]]
         correct_or_not = data[key]["GPT+P-perplexityCorr"]
+        if "revised_after_insertion" in more_info[key].keys(): 
+            revised_after_insertion = more_info[key]["revised_after_insertion"]
+        else: 
+            revised_after_insertion = more_info[key]["revised_afer_insertion"]
+
         if correct_or_not: 
             counter +=1
 
             # take the top 1 (here: human-inserted) and the second best one. 
             fifty_instances_with_human_inserted[key] = {"Answer1": predictions[0], "Answer2": predictions[1], "OtherInfo": "human-inserted", "CorrectRef": other_info[key]["CorrectReference"] }
+            fifty_instances_with_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion} )
+
         else: 
             # TODO: check the position of the correct answer. 
 
@@ -43,7 +52,7 @@ def main():
             if occurs_in_top_10 == 1: 
                 
                 fifty_instances_without_human_inserted[key] = {"Answer 1": predictions[0], "Answer2": predictions[1], "OtherInfo": "not-human-inserted"}
-            
+                fifty_instances_without_human_inserted[key].update( {"par": more_info[key]["par"], "revised_untill_insertion": more_info[key]['revised_untill_insertion'], "revised_after_insertion": revised_after_insertion} )
 
    
     print(len(fifty_instances_with_human_inserted.keys()))
