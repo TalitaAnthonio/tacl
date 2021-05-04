@@ -5,6 +5,7 @@ import json
 import spacy 
 import pickle 
 from nltk.corpus import stopwords
+import numpy as np 
 
 
 USE_DEV = False
@@ -165,7 +166,7 @@ class BowForContext:
 
 
 
-def check_pos_of_filler(predictions, correct_filler, topk=10): 
+def check_pos_of_filler(predictions, correct_filler, topk=1): 
     if correct_filler.lower() in predictions[:topk]: 
        return 1 
     else: 
@@ -181,7 +182,7 @@ def main():
     total_correct = 0 
 
     counter = 0 
-    
+    average_len = []
     for key, _ in development_set.items(): 
         counter +=1 
         print("=========== counter {0} =====================".format(counter))
@@ -191,14 +192,16 @@ def main():
 
         print("make top bow ")
         top_based_on_bow =  BowForContext(tokenized_context, len(correct_ref)).top_instances()
+        average_len.append(len(top_based_on_bow))
         print(top_based_on_bow)
        
         
         print("check if occurs in baseline ... ") 
         occurs_in_baseline = check_pos_of_filler(top_based_on_bow, development_set[key]["CorrectReference"])
-        print("occurs {0}".format(occurs_in_baseline))
+        print("occurs {0} reference {1}".format(occurs_in_baseline, development_set[key]["CorrectReference"]))
         total_correct += occurs_in_baseline
 
     print(total_correct)
+    print(np.mean(average_len))
     
 main()
