@@ -142,7 +142,7 @@ def main():
                     if position_of_correct_reference == 0: 
                        next_referring_expression_in_revised_sentence = sorted(reference_index_list[sentence_indexes[0]]["reference"], key=lambda x:x[-1], reverse=True)[1]
                        absolute_distance_between_ref_in_same = abs(correct_reference_index_pair[-1] - next_referring_expression_in_revised_sentence[-1])
-
+    
                        absolute_distance_between_ref_in_prev = abs(abs(sentence_length_of_previous_sentence - closest_referring_expression_in_the_previous_sentence[-1]) + (correct_reference_index_pair[-1])) 
                        
 

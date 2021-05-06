@@ -35,7 +35,7 @@ def format_title(title):
     title = title.replace("_", " ").strip('.txt')
     return "<i> How to {0} </i>".format(title)
 
-def make_dict(line1, line2, context, filename, answer1, answer2, human_inserted_or_not):
+def make_dict(key, line1, line2, context, filename, answer1, answer2, human_inserted_or_not, correct_reference):
     """
         Line 1 -> the first one (with answer 1 )
         Line 2 -> the second one (with answer 2)
@@ -44,17 +44,17 @@ def make_dict(line1, line2, context, filename, answer1, answer2, human_inserted_
     element_that_will_be_presented_first = random.choice([0, 1])
 
     # means that the source is the first one:
-
  
     if element_that_will_be_presented_first == 0:
-        elements = {"Line1": line1, "Answer1":answer1, "Answer2": answer2, "Context1": context.rstrip('\n').replace('\n', '<br />'),
+        elements = {"id": key, "Line1": line1, "Answer1":answer1, "Answer2": answer2, "Context1": context.rstrip('\n').replace('\n', '<br />'),
                     "Line2": line2, "Context2": context.rstrip('\n').replace('\n', '<br />'), "Info": "answer1-first",
-                    "Differences": get_differences(answer1, answer2), "Title": filename, "human-inserted-or-not": human_inserted_or_not}
+                    "Differences": get_differences(answer1, answer2), "Title": filename, "human-inserted-or-not": human_inserted_or_not, "CorrectReference": correct_reference}
     else:
 
-        elements = {"Line2": line1, "Answer1": answer2, "Answer2":  answer1, "Context2": context.rstrip('\n').replace('\n', '<br />'),
+
+        elements = {"id": key, "Line2": line1, "Answer1": answer2, "Answer2":  answer1, "Context2": context.rstrip('\n').replace('\n', '<br />'),
                     "Line1": line2, "Context1":  context.rstrip('\n').replace('\n', '<br />') , "Info": "answer2-first",
-                    "Differences": get_differences(answer2, answer1), "Title": filename, "human-inserted-or-not": human_inserted_or_not}
+                    "Differences": get_differences(answer2, answer1), "Title": filename, "human-inserted-or-not": human_inserted_or_not, "CorrectReference": correct_reference}
     return elements
 
 def get_differences(correct_seq, generated): 
@@ -120,10 +120,11 @@ def main():
         if context == "": 
            context = data[key]['par'].rstrip('\n')
 
-        row = make_dict(line1, line2, context, filename, answer1, answer2, info)
+        row = make_dict(key, line1, line2, context, filename, answer1, answer2, info, filtered[key]["CorrectRef"])
         collection.append(row)
 
     df = pd.DataFrame(collection)
+    df = df.sample(frac=1)
     print(df)
     df = df.replace('\n',' ', regex=True)
     df.to_csv('annotation-set-trial-may.csv', sep=',', index=False, line_terminator=None)
