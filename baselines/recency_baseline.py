@@ -125,9 +125,10 @@ def main():
                   else: 
                      right_most = referring_expressions_in_revised_pairs[position_of_correct_reference+1]
                      left_most = referring_expressions_in_revised_pairs[position_of_correct_reference-1]
-                     right_most_distance = abs(position_of_correct_reference - (right_most[-1]) )
-                     left_most_distance = abs(position_of_correct_reference - (left_most[-1]) )
-                     if right_most > left_most: 
+                     right_most_distance = abs(correct_reference_index_pair[-1]- (right_most[-1]) )
+                     left_most_distance = abs(correct_reference_index_pair[-1] - (left_most[-1]) )
+                     
+                     if right_most_distance > left_most_distance: 
                         print("closest reference", left_most)
                         closest_reference = left_most
                      else: 
