@@ -179,7 +179,7 @@ def main():
                closest_reference = closest_reference[0] 
             
             print(" ".join(closest_reference).lower(), correct_reference)
-            if " ".join(closest_reference).lower() == correct_reference: 
+            if " ".join(closest_reference).lower() == correct_reference.lower(): 
                counter +=1
                print("the same! ") 
 
