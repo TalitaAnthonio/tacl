@@ -184,6 +184,7 @@ def main():
                             right_instances_sorted.append([elem[0], distance])
                     
                     right_instances_sorted = sorted(right_instances_sorted, key=lambda x:x[-1])
+                    print("right instances", right_instances_sorted)
 
                     # check for the left instances 
                     left_instances_sorted = []
@@ -193,6 +194,7 @@ def main():
                             left_instances_sorted.append([elem[0], distance])
                     
                     left_instances_sorted = sorted(left_instances_sorted, key=lambda x:x[-1])
+                    print("left instances", left_instances_sorted)
 
                     all_sorted_instances = left_instances_sorted + right_instances_sorted
                     all_sorted_instances = sorted(all_sorted_instances, key=lambda x: x[-1])
@@ -216,15 +218,20 @@ def main():
                             else: 
                                distance = abs(abs(sentence_length_of_previous_sentence - referring_expression[-1]) + (correct_reference_index_pair[-1] +  total_sentence_length )) 
                             referring_expressions_in_previous_sentences.append([referring_expression[0], distance])
-                    pdb.set_trace()
-                    break 
-
+                    
+                    print("others", referring_expressions_in_previous_sentences)
+                    sorted_instances_same_and_previous_sentence_all = sorted_instances_same_and_previous_sentence + referring_expressions_in_previous_sentences
+                    sorted_instances_same_and_previous_sentence_all_sorted = sorted(sorted_instances_same_and_previous_sentence_all, key=lambda x:x[-1])
+                    
+                    all_previous_references += [elem[0] for elem in sorted_instances_same_and_previous_sentence_all_sorted ]
+                    
                       
                         
 
-
-            print("previous references", all_previous_references)
-
+            top_previous_references = ["".join(elem[0]).lower() for elem in  all_previous_references][0:10]
+            print("top previous references", top_previous_references)
+            if correct_reference.lower() in top_previous_references: 
+               counter +=1 
 
 
         except ValueError: 
