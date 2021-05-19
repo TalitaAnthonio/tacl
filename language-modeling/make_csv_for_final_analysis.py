@@ -67,9 +67,9 @@ def main():
     print(len(fifty_instances_without_human_inserted.keys()))
 
 
-    with open("with_human_inserted.json", "w") as json_out: 
-         json.dump(fifty_instances_without_human_inserted, json_out)
+    #with open("with_human_inserted.json", "w") as json_out: 
+    #     json.dump(fifty_instances_without_human_inserted, json_out)
     
-    with open("without_human_inserted.json", "w") as json_out: 
-         json.dump(fifty_instances_with_human_inserted, json_out)
+    #with open("without_human_inserted.json", "w") as json_out: 
+    #     json.dump(fifty_instances_with_human_inserted, json_out)
 main()

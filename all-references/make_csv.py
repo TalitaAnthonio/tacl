@@ -1,7 +1,7 @@
 import pandas as pd 
 import json 
 
-insertion_type = "trigram"
+insertion_type = "unigram"
 
 if insertion_type == "bigram": 
     path_to_file = "../data/bigram_atomic_edits_final.json"
@@ -48,8 +48,8 @@ def main():
     dataframe_dict = {"ArticleName": [], "RevisedSentence": [], "Reference": [], "Context": []}
     
     for key, _ in trigrams.items(): 
-        #if key not in KEYS_TO_DELETE: 
-        if key in keys_to_include: 
+        if key not in KEYS_TO_DELETE: 
+        #if key in keys_to_include: 
             #dataframe_dict["Insertion"].append(trigrams[key]['insertion'])
             #dataframe_dict["id"].append(key)
             #dataframe_dict["reference"].append(trigrams[key]['reference'])
@@ -57,7 +57,7 @@ def main():
             #dataframe_dict["par"].append(trigrams[key]['par'])
             #dataframe_dict["position-of-ref-in-insertion"].append(trigrams[key]['position-of-ref-in-insertion'])
             dataframe_dict["ArticleName"].append(trigrams[key]["filename"])
-            dataframe_dict["RevisedSentence"].append(trigrams[key]["revised_sentence"])
+            dataframe_dict["RevisedSentence"].append(" ".join(trigrams[key]["revised_sentence"]))
             dataframe_dict["Reference"].append(" ".join(trigrams[key]["reference"]))
             dataframe_dict["Context"].append(remove_timestamps(trigrams[key]["par"]))
 
