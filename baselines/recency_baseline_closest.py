@@ -76,6 +76,7 @@ def get_ref_per_sent(coref_info):
 
 def main(): 
     counter = 0 
+    collection = {}
     for key, _ in data.items():
         
         if "coref" in coref_data[key].keys(): 
@@ -228,8 +229,9 @@ def main():
                       
                         
 
-            top_previous_references = ["".join(elem[0]).lower() for elem in  all_previous_references][0:10]
+            top_previous_references = [" ".join(elem).lower() for elem in  all_previous_references]
             print("top previous references", top_previous_references)
+            collection[key] = top_previous_references
             if correct_reference.lower() in top_previous_references: 
                counter +=1 
 
@@ -246,4 +248,7 @@ def main():
         print("======================")
     
     print(counter)
+
+    with open("recency_dev.json", "w") as json_out: 
+         json.dump(collection, json_out)
 main()
