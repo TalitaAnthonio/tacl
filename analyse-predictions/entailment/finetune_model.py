@@ -10,7 +10,8 @@ import torch.optim as optim
 PATH_TO_TRAIN = 'train_news.csv'
 PATH_TO_VAL = 'val_news.csv'
 PATH_TO_TEST = 'test_news.csv'
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device="cpu"
 
 # set model parameters 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
