@@ -68,6 +68,7 @@ def use_text_generation(text_to_predict, insertion_length):
     tokenized_text =  tokenizer.tokenize(text_to_predict)
     print("length of the tokenized text", len(tokenized_text)) 
     if len(tokenized_text) >= 512: 
+        print("in if")
 
         inputs = tokenizer.encode(text_to_predict, add_special_tokens=False, return_tensors="pt") 
 
@@ -96,6 +97,7 @@ def use_text_generation(text_to_predict, insertion_length):
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
     
     else: 
+        print("in else")
     
         inputs = tokenizer.encode(text_to_predict, add_special_tokens=False, return_tensors="pt") 
         encoded_inputs = tokenizer.decode(inputs[0])
@@ -110,6 +112,7 @@ def use_text_generation(text_to_predict, insertion_length):
         else: 
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
 
+    print({"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs})
     return {"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs}
 
 
