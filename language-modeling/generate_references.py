@@ -90,8 +90,9 @@ def use_text_generation(text_to_predict, insertion_length):
 
         if device!='cpu': 
             inputs = inputs.to(device)
-            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
             model.to(device)
+            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
+            #model.to(device)
 
         else: 
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
@@ -106,9 +107,10 @@ def use_text_generation(text_to_predict, insertion_length):
         #print(inputs.size()[1]+insertion_length)
         if device != 'cpu': 
             inputs = inputs.to(device)
+            model.to(device)
             print(inputs.get_device())
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
-            model.to(device)
+            #model.to(device)
 
         else: 
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
