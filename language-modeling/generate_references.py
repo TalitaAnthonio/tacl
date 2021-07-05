@@ -13,7 +13,7 @@ import torch
 import pdb 
 import torch.nn as nn 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1,2,3' if torch.cuda.is_available() else 'cpu')
 #device='cpu'
 torch.cuda.empty_cache()
 
@@ -54,8 +54,8 @@ with open(path_to_file_in, "r") as json_in:
      single_insertions = json.load(json_in)
 
 if model_to_use == 'openai-gpt': 
-    model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
-    model = nn.DataParallel(model)
+    gpt_model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
+    model = nn.DataParallel(gpt_model, device_ids=[1,2,3])
     model.to(device)
     tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
 else: 
