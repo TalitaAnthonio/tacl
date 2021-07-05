@@ -35,7 +35,7 @@ num_return_sequences = args['ReturnSequences']
 num_beams = args['Beams']
 path_to_file_out = args['FilenameToWrite']
 path_to_file_in = args['FileIn']
-TRUNC_BY_WORD = False
+TRUNC_BY_WORD = True
 
 
 print("--------------")
@@ -74,7 +74,6 @@ def use_text_generation(text_to_predict, insertion_length):
         # truncate 
         inputs_truncated = inputs.tolist()[0]
         truncate_point = (512-insertion_length) * -1 
-        print(truncate_point)
         inputs_truncated = inputs_truncated[truncate_point:]
         
         #if insertion_length == 2: 
@@ -83,10 +82,13 @@ def use_text_generation(text_to_predict, insertion_length):
         #    inputs_truncated = inputs_truncated[-512:]
         
         inputs = torch.tensor(inputs_truncated, dtype=torch.int64).unsqueeze(0)
+
+
         encoded_inputs = tokenizer.decode(inputs[0])
         prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
 
         if device!='cpu': 
+            inputs = inputs.to(device)
             outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
             model.to(device)
 
