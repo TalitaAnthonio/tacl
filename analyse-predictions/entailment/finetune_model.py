@@ -2,16 +2,18 @@ import pandas as pd
 import numpy as np 
 from sklearn.model_selection import train_test_split
 import torch 
-from torchtext.legacy.data import Field, TabularDataset, BucketIterator, Iterator
+from torchtext.legacy.data import Field, TabularDataset, BucketIterator, Iterator, LabelField
 import torch.nn as nn
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertTokenizer, BertForSequenceClassification, BertConfig
 import torch.optim as optim
+import pdb 
 
 PATH_TO_TRAIN = 'train_news.csv'
 PATH_TO_VAL = 'val_news.csv'
 PATH_TO_TEST = 'test_news.csv'
 #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 device="cpu"
+
 
 # set model parameters 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -21,22 +23,35 @@ UNK_INDEX = tokenizer.convert_tokens_to_ids(tokenizer.unk_token)
 
 
 # preprocess data 
-label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch.float)
+#label_field = Field(sequential=False, use_vocab=False, batch_first=True, dtype=torch.float)
+label_field = LabelField()
+
 
 # tokenizer.encode -> makes sure that we use the bert model for tokenization 
 text_field = Field(use_vocab=False, tokenize=tokenizer.encode, lower=False, include_lengths=False, batch_first=True,
                    fix_length=MAX_SEQ_LEN, pad_token=PAD_INDEX, unk_token=UNK_INDEX)
+
 fields = [('label', label_field), ('title', text_field), ('titletext', text_field), ('text', text_field)]
 
+
+print("make tabular dataset")
 train, valid, test = TabularDataset.splits(path='.', train=PATH_TO_TRAIN, validation=PATH_TO_VAL,
                                            test=PATH_TO_TEST, format='CSV', fields=fields, skip_header=True)
 
-train_iter = BucketIterator(train, batch_size=16, sort_key=lambda x: len(x.text),
-                            device=device, train=True, sort=True, sort_within_batch=True)
-var_iter = BucketIterator(valid, batch_size=16, sort_key=lambda x: len(x.text),
-                            device=device, train=True, sort=True, sort_within_batch=True)
-test_iter = BucketIterator(test, batch_size=16, sort_key=lambda x: len(x.text),
-                            device=device, train=True, sort=True, sort_within_batch=True)
+print(vars(train[0]))
+print(vars(train[1]))
+
+train_iter = BucketIterator(train, batch_size=16, sort_key=lambda x: len(x.text), train=True, sort=True, sort_within_batch=True)
+
+
+var_iter = BucketIterator(valid, batch_size=16, sort_key=lambda x: len(x.text), train=True, sort=True, sort_within_batch=True) 
+test_iter = BucketIterator(test, batch_size=16, sort_key=lambda x: len(x.text), train=True, sort=True, sort_within_batch=True)
+
+label_field.build_vocab(train)
+print(label_field.vocab)
+print(len(label_field.vocab))
+
+
 
 class BERT(nn.Module):
 
@@ -44,10 +59,12 @@ class BERT(nn.Module):
         super(BERT, self).__init__()
 
         options_name = "bert-base-uncased"
-        self.encoder = BertForSequenceClassification.from_pretrained(options_name)
+        config = BertConfig.from_pretrained('bert-base-uncased')
+        config.num_labels = 2
+        self.encoder = BertForSequenceClassification(config)
 
     def forward(self, text, label):
-        loss, text_fea = self.encoder(text, labels=label)[:2]
+        loss, text_fea = self.encoder(text, labels=label)
 
         return loss, text_fea
 
@@ -103,7 +120,6 @@ def load_metrics(load_path):
 
 def train(model,
           optimizer,
-          criterion = nn.BCELoss(),
           train_loader = train_iter,
           valid_loader = var_iter,
           num_epochs = 5,
@@ -122,12 +138,21 @@ def train(model,
     # training loop
     model.train()
     for epoch in range(num_epochs):
-        for (labels, title, text, titletext), _ in train_loader:
-            labels = labels.type(torch.LongTensor)           
-            labels = labels.to(device)
-            titletext = titletext.type(torch.LongTensor)  
-            titletext = titletext.to(device)
-            output = model(titletext, labels)
+        print("training epoch ...... ")
+        #for elem in train_loader: 
+        #    print(elem)
+        #    print(elem.label)
+        #    print("-------------------")
+        for elem in train_loader:
+            #labels = labels.type(torch.LongTensor)           
+            #labels = labels.to(device)
+            titletext = elem.titletext
+            labels = elem.label
+            title = elem.title  
+            #titletext = titletext.to(device)
+
+            # volgende: probeer alleen met de title? 
+            output = model(title, labels)
             loss, _ = output
 
             optimizer.zero_grad()
@@ -146,9 +171,9 @@ def train(model,
                     # validation loop
                     for (labels, title, text, titletext), _ in valid_loader:
                         labels = labels.type(torch.LongTensor)           
-                        labels = labels.to(device)
+                        #labels = labels.to(device)
                         titletext = titletext.type(torch.LongTensor)  
-                        titletext = titletext.to(device)
+                        #titletext = titletext.to(device)
                         output = model(titletext, labels)
                         loss, _ = output
                         
@@ -180,7 +205,7 @@ def train(model,
     save_metrics(file_path + '/' + 'metrics.pt', train_loss_list, valid_loss_list, global_steps_list)
     print('Finished Training!')
 
-model = BERT().to(device)
+model = BERT()
 optimizer = optim.Adam(model.parameters(), lr=2e-5)
 
 train(model=model, optimizer=optimizer)

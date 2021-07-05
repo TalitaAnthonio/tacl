@@ -9,3 +9,8 @@ language-modeling/finetuned-model
 *.csv
 *.textClipping
 analyse-predictions/run-coreference/CoreNLPfiles
+analyse-predictions/entailment/context-dataset
+analyse-predictions/entailment/aclimdb
+analyse-predictions/entailment/logs
+*.tar.gz
+*.out
