@@ -13,7 +13,7 @@ import torch
 import pdb 
 import torch.nn as nn 
 
-device = torch.device('cuda:1,2,3' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
 #device='cpu'
 torch.cuda.empty_cache()
 
@@ -55,8 +55,8 @@ with open(path_to_file_in, "r") as json_in:
 
 if model_to_use == 'openai-gpt': 
     gpt_model =  OpenAIGPTLMHeadModel.from_pretrained('openai-gpt', cache_dir="../../model")
-    model = nn.DataParallel(gpt_model, device_ids=[1,2,3])
-    model.to(device)
+    #model = nn.DataParallel(gpt_model)
+    #model.to(device)
     tokenizer = OpenAIGPTTokenizer.from_pretrained('openai-gpt', cache_dir="../../model")
 else: 
     model_path='xlnet-base-cased'
@@ -88,14 +88,14 @@ def use_text_generation(text_to_predict, insertion_length):
         
         inputs = torch.tensor(inputs_truncated, dtype=torch.int64).unsqueeze(0)
 
-
         encoded_inputs = tokenizer.decode(inputs[0])
         prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
 
         if device!='cpu': 
             inputs = inputs.to(device)
-            model.to(device)
-            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
+            gpt_model.to(device)
+            model = torch.nn.DataParallel(gpt_model)
+            outputs = model.module.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
             #model.to(device)
 
         else: 
@@ -111,9 +111,10 @@ def use_text_generation(text_to_predict, insertion_length):
         #print(inputs.size()[1]+insertion_length)
         if device != 'cpu': 
             inputs = inputs.to(device)
-            model.to(device)
+            gpt_model.to(device)
             print(inputs.get_device())
-            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
+            model = torch.nn.DataParallel(gpt_model)
+            outputs = model.module.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
             #model.to(device)
 
         else: 
@@ -164,7 +165,7 @@ def main():
 
     with open(path_to_file_out, "w") as json_out: 
         for revision_id, _ in single_insertions.items(): 
-            if  single_insertions[revision_id]['Split'] == 'TRAIN': 
+            if  single_insertions[revision_id]['Split'] == 'TEST': 
                 counter +=1 
                 insertion = single_insertions[revision_id]["insertion"]
                 print("running {0}".format(counter))
