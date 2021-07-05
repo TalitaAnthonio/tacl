@@ -63,6 +63,7 @@ else:
 
 # always used the defautl configuration file 
 def use_text_generation(text_to_predict, insertion_length): 
+    print("use this function")
     
     tokenized_text =  tokenizer.tokenize(text_to_predict)
     print("length of the tokenized text", len(tokenized_text)) 
@@ -126,13 +127,15 @@ def use_text_generation_truncate_by_sentence(text_to_predict, insertion_length):
        tokenized_text.reverse()
        text_to_predict = ' '.join(tokenized_text)
     else: 
-        text_to_predict = text_to_predict    
+        text_to_predict = text_to_predict  
+
     inputs = tokenizer.encode(text_to_predict, add_special_tokens=False, return_tensors="pt") 
     encoded_inputs = tokenizer.decode(inputs[0])
 
     prompt_length = len(tokenizer.decode(inputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True))
     #print(inputs.size()[1]+insertion_length)
     if device != 'cpu': 
+        inputs = inputs.to(device)
         outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
         model.to(device)
 
