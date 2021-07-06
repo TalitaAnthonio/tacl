@@ -95,11 +95,11 @@ def use_text_generation(text_to_predict, insertion_length):
             inputs = inputs.to(device)
             gpt_model.to(device)
             model = torch.nn.DataParallel(gpt_model)
-            outputs = model.module.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences)
+            outputs = model.module.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_return_sequences, )
             #model.to(device)
 
         else: 
-            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
+            outputs = gpt_model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
     
     else: 
         print("in else")
@@ -118,7 +118,7 @@ def use_text_generation(text_to_predict, insertion_length):
             #model.to(device)
 
         else: 
-            outputs = model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
+            outputs = gpt_model.generate(inputs, max_length=inputs.size()[1]+insertion_length, num_return_sequences=num_return_sequences, num_beams=num_beams)
 
     print({"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs})
     return {"generated_texts": [tokenizer.decode(outputs[i])[prompt_length:] for i in range(len(outputs))], "tokenized_in_model": encoded_inputs}
